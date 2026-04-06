@@ -128,7 +128,7 @@ function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link to="/login" className="hidden sm:block text-sm font-semibold text-white/60 hover:text-white transition-colors" style={jakartaSans}>
+          <Link to="/admin-login" className="hidden sm:block text-sm font-semibold text-white/60 hover:text-white transition-colors" style={jakartaSans}>
             Iniciar sesión
           </Link>
           <a
