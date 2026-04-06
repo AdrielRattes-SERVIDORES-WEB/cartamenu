@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, Eye, PackageOpen, Printer } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useStore } from '@/contexts/StoreContext';
+import { useTenant } from '@/contexts/TenantContext';
 import { formatCurrency } from '@/lib/utils';
 import { toast } from 'sonner';
 import { OrderDB, OrderStatus, OrderItem } from '@/types/product';
@@ -26,6 +27,7 @@ const OrderStatusMap = {
 const AdminOrders = () => {
   const { t } = useTranslation();
   const { storeInfo } = useStore();
+  const { tenantId } = useTenant();
   const [orders, setOrders] = useState<OrderDB[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -35,14 +37,16 @@ const AdminOrders = () => {
   
   useEffect(() => {
     fetchOrders();
-  }, [statusFilter, searchTerm]);
-  
+  }, [statusFilter, searchTerm, tenantId]);
+
   const fetchOrders = async () => {
+    if (!tenantId) return;
     setLoading(true);
     try {
       let query = supabase
         .from('orders')
         .select('*')
+        .eq('tenant_id', tenantId)
         .order('created_at', { ascending: false });
       
       if (statusFilter !== 'all') {
@@ -169,7 +173,8 @@ const AdminOrders = () => {
       const { error } = await supabase
         .from('orders')
         .update({ status: newStatus, updated_at: new Date().toISOString() })
-        .eq('id', orderId);
+        .eq('id', orderId)
+        .eq('tenant_id', tenantId!);
       
       if (error) throw error;
       
@@ -188,6 +193,21 @@ const AdminOrders = () => {
       }
       
       toast.success(t('common.success'));
+
+      // Enviar email de atualização ao cliente
+      const order = orders.find(o => o.id === orderId);
+      if (order && ['processing', 'delivering', 'delivered', 'cancelled'].includes(newStatus)) {
+        const email = order.address?.customer_email || order.profiles?.email;
+        const name = order.address?.customer_name || order.profiles?.name;
+        if (email) {
+          supabase.functions.invoke('send-email', {
+            body: {
+              type: 'order_status_update',
+              data: { customerName: name, customerEmail: email, orderId, status: newStatus, storeName: '' }
+            }
+          }).catch(() => {});
+        }
+      }
     } catch (error: any) {
       toast.error(t('common.error') + ': ' + error.message);
     }

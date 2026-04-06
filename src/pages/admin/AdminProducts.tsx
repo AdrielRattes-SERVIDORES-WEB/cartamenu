@@ -13,6 +13,7 @@ import { Tables } from '@/integrations/supabase/types';
 import SupabaseProductForm from '@/components/admin/SupabaseProductForm';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useStore } from '@/contexts/StoreContext';
+import { useTenant } from '@/contexts/TenantContext';
 import { formatCurrency } from '@/lib/utils';
 
 type ProductWithCategoryName = Tables<'products'> & {
@@ -26,6 +27,7 @@ type ProductWithOptions = ProductWithCategoryName & {
 const AdminProducts = () => {
   const { t } = useTranslation();
   const { storeInfo } = useStore();
+  const { tenantId } = useTenant();
   const [products, setProducts] = useState<ProductWithOptions[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -33,6 +35,7 @@ const AdminProducts = () => {
   const [editingProduct, setEditingProduct] = useState<Tables<'products'> | null>(null);
 
   const fetchProducts = async () => {
+    if (!tenantId) return;
     setIsLoading(true);
     try {
       let query = supabase
@@ -41,6 +44,7 @@ const AdminProducts = () => {
           *,
           categories ( name )
         `)
+        .eq('tenant_id', tenantId)
         .order('name', { ascending: true });
 
       if (searchTerm) {
@@ -74,7 +78,7 @@ const AdminProducts = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [searchTerm]);
+  }, [searchTerm, tenantId]);
 
   const handleAddProduct = () => {
     setEditingProduct(null);
@@ -93,7 +97,8 @@ const AdminProducts = () => {
       const { error } = await supabase
         .from('products')
         .delete()
-        .eq('id', productId);
+        .eq('id', productId)
+        .eq('tenant_id', tenantId!);
       
       if (error) throw error;
       

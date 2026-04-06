@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__stitch__list_projects",
+      "mcp__stitch__list_screens",
+      "mcp__stitch__create_project",
+      "mcp__stitch__generate_screen_from_text",
+      "mcp__stitch__get_screen",
+      "WebFetch(domain:contribution.usercontent.google.com)",
+      "Bash(cd:*)",
+      "Bash(node:*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Read(//c/Users/noteb/.supabase/**)",
+      "Read(//c/Users/noteb/.config/supabase/**)",
+      "Bash(taskkill:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Read(//c/pizza petaka/pizzapetaka/$APPDATA/supabase/**)",
+      "Read(//c/pizza petaka/pizzapetaka/$HOME/.supabase/**)",
+      "Read(//c/pizza petaka/pizzapetaka/$APPDATA/**)",
+      "Read(//c/pizza petaka/pizzapetaka/$USERPROFILE/**)",
+      "Read(//c/pizza petaka/pizzapetaka/$USERPROFILE/.supabase/**)",
+      "Bash(mv:*)",
+      "Bash(file:*)",
+      "Bash(git:*)",
+      "Bash(echo:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo:*)"
+    ]
+  }
+}

@@ -57,7 +57,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
               updatedItems[existingItemIndex].selectedOptionsPrice * updatedItems[existingItemIndex].quantity;
           }
           
-          toast.success('Item adicionado ao carrinho!');
+          toast.success('¡Artículo añadido al carrito!');
           return updatedItems;
         } else {
           // Caso contrário, adicione um novo item
@@ -72,7 +72,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             newItemWithId.totalPrice += newItemWithId.selectedOptionsPrice * newItemWithId.quantity;
           }
           
-          toast.success('Item adicionado ao carrinho!');
+          toast.success('¡Artículo añadido al carrito!');
           return [...prevItems, newItemWithId];
         }
       } catch (error) {

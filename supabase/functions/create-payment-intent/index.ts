@@ -20,7 +20,7 @@ serve(async (req) => {
     });
     
     const requestData = await req.json();
-    const { amount, currency = "brl", metadata } = requestData;
+    const { amount, currency = "eur", metadata } = requestData;
     
     // Validate the amount
     if (!amount || isNaN(amount) || amount <= 0) {

@@ -19,11 +19,13 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useTenant } from '@/contexts/TenantContext';
 
 type CategoryWithProductCount = Tables<'categories'> & { product_count: number };
 
 const AdminCategories = () => {
   const { t } = useTranslation();
+  const { tenantId } = useTenant();
   const [categories, setCategories] = useState<CategoryWithProductCount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [newCategoryName, setNewCategoryName] = useState('');
@@ -35,12 +37,14 @@ const AdminCategories = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const fetchCategories = async () => {
+    if (!tenantId) return;
     setIsLoading(true);
     try {
       // Fetch categories
       const { data: categoriesData, error: categoriesError } = await supabase
         .from('categories')
         .select('*')
+        .eq('tenant_id', tenantId)
         .order('name', { ascending: true });
 
       if (categoriesError) throw categoriesError;
@@ -71,7 +75,7 @@ const AdminCategories = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [tenantId]);
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +86,7 @@ const AdminCategories = () => {
     try {
       const { data, error } = await supabase
         .from('categories')
-        .insert([{ name: newCategoryName.trim(), description: newCategoryDescription.trim() }])
+        .insert([{ name: newCategoryName.trim(), description: newCategoryDescription.trim(), tenant_id: tenantId }])
         .select()
         .single();
       

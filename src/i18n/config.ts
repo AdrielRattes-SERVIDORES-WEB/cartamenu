@@ -3,11 +3,13 @@ import { initReactI18next } from 'react-i18next';
 import en from '@/locales/en/translation.json';
 import es from '@/locales/es/translation.json';
 import it from '@/locales/it/translation.json';
+import pt from '@/locales/pt/translation.json';
 
 const resources = {
   en: { translation: en },
   es: { translation: es },
   it: { translation: it },
+  pt: { translation: pt },
 };
 
 // Função para obter idioma da URL - VERIFICA SE ESTÁ NO BROWSER
@@ -20,7 +22,7 @@ const getLanguageFromURL = () => {
   try {
     const params = new URLSearchParams(window.location.search);
     const langParam = params.get('lang');
-    if (langParam && ['en', 'es', 'it'].includes(langParam)) {
+    if (langParam && ['en', 'es', 'it', 'pt'].includes(langParam)) {
       return langParam;
     }
   } catch (error) {
