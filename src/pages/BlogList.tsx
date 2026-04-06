@@ -25,19 +25,19 @@ export default function BlogList() {
   const BLOG_LIST_SCHEMA = {
     "@context": "https://schema.org",
     "@type": "Blog",
-    "@id": "https://cartamenu.es/blog/articulos",
+    "@id": "https://cartamenu.shop/blog/articulos",
     "name": "Blog CartaMenu — Recursos para restaurantes en España",
     "description": "Guías prácticas para digitalizar tu restaurante, recibir pedidos online y dejar de pagar comisiones en ciudades de España.",
-    "url": "https://cartamenu.es/blog/articulos",
+    "url": "https://cartamenu.shop/blog/articulos",
     "publisher": {
       "@type": "Organization",
       "name": "CartaMenu",
-      "url": "https://cartamenu.es"
+      "url": "https://cartamenu.shop"
     },
     "blogPost": BLOG_POSTS.map((p) => ({
       "@type": "BlogPosting",
       "headline": p.title,
-      "url": `https://cartamenu.es/blog/${p.slug}`,
+      "url": `https://cartamenu.shop/blog/${p.slug}`,
       "datePublished": p.date,
       "description": p.excerpt,
       "author": { "@type": "Person", "name": p.author },

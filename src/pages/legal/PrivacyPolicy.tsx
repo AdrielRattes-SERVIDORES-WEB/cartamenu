@@ -37,7 +37,7 @@ export default function PrivacyPolicy() {
           <p>En <strong>CartaMenu</strong> (en adelante, "nosotros", "la empresa" o "el servicio") nos comprometemos a proteger la privacidad de nuestros usuarios. Esta política describe qué datos recogemos, cómo los usamos y cuáles son tus derechos.</p>
 
           <h2>1. Responsable del tratamiento</h2>
-          <p>CartaMenu, con domicilio en Madrid, España. Contacto: <a href="mailto:privacidad@cartamenu.es" className="text-[#FF3008]">privacidad@cartamenu.es</a></p>
+          <p>CartaMenu, con domicilio en Madrid, España. Contacto: <a href="mailto:privacidad@cartamenu.shop" className="text-[#FF3008]">privacidad@cartamenu.shop</a></p>
 
           <h2>2. Datos que recogemos</h2>
           <ul>
@@ -68,7 +68,7 @@ export default function PrivacyPolicy() {
           <p>Todos ellos actúan como encargados del tratamiento bajo contrato y con garantías adecuadas.</p>
 
           <h2>6. Tus derechos</h2>
-          <p>Puedes ejercer en cualquier momento tus derechos de acceso, rectificación, supresión, portabilidad, limitación y oposición escribiendo a <a href="mailto:privacidad@cartamenu.es" className="text-[#FF3008]">privacidad@cartamenu.es</a>. También puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
+          <p>Puedes ejercer en cualquier momento tus derechos de acceso, rectificación, supresión, portabilidad, limitación y oposición escribiendo a <a href="mailto:privacidad@cartamenu.shop" className="text-[#FF3008]">privacidad@cartamenu.shop</a>. También puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es).</p>
 
           <h2>7. Cookies</h2>
           <p>Usamos cookies técnicas y analíticas. Consulta nuestra <Link to="/cookies" className="text-[#FF3008]">Política de Cookies</Link> para más información.</p>
