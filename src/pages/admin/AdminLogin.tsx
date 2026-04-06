@@ -12,8 +12,8 @@ import { useUser } from '@/contexts/UserContext';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Email inválido' }),
-  password: z.string().min(6, { message: 'Senha deve ter pelo menos 6 caracteres' }),
+  email: z.string().email({ message: 'Email no válido' }),
+  password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres' }),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -49,11 +49,11 @@ const AdminLogin = () => {
       await adminLogin(data.email, data.password);
       
       // If we reach this line, it means the login was successful
-      toast.success('Login de administrador realizado com sucesso!');
+      toast.success('Sesión iniciada correctamente');
       navigate('/admin', { replace: true });
     } catch (error: any) {
       console.error("Admin login error:", error);
-      toast.error(error.message || 'Credenciais de administrador inválidas ou falha no login.');
+      toast.error(error.message || 'Credenciales incorrectas. Inténtalo de nuevo.');
     } finally {
       setIsSubmitting(false);
     }
@@ -66,9 +66,9 @@ const AdminLogin = () => {
           <div className="mx-auto h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
             <ShieldCheck className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Área do Administrador</h1>
+          <h1 className="text-3xl font-bold text-white">Área de Administración</h1>
           <p className="mt-2 text-slate-300">
-            Acesse o painel de controle administrativo
+            Accede al panel de control de tu restaurante
           </p>
         </div>
         
@@ -80,11 +80,11 @@ const AdminLogin = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email de Administrador</FormLabel>
+                    <FormLabel>Email de acceso</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="email" 
-                        placeholder="admin@exemplo.com" 
+                      <Input
+                        type="email"
+                        placeholder="admin@mirestaurante.es"
                         {...field} 
                       />
                     </FormControl>
@@ -98,7 +98,7 @@ const AdminLogin = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha</FormLabel>
+                    <FormLabel>Contraseña</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input 
@@ -110,7 +110,7 @@ const AdminLogin = () => {
                           type="button" 
                           onClick={() => setShowPassword(!showPassword)}
                           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                          aria-label={showPassword ? "Esconder senha" : "Mostrar senha"}
+                          aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                         >
                           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
@@ -123,7 +123,7 @@ const AdminLogin = () => {
               
               <div className="pt-2">
                 <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" size="lg" disabled={loading || isSubmitting}>
-                  {isSubmitting ? 'Entrando...' : 'Entrar como Administrador'}
+                  {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
                 </Button>
               </div>
             </form>
@@ -132,15 +132,9 @@ const AdminLogin = () => {
           <div className="mt-8 border-t pt-6">
             <div className="text-center space-y-3">
               <p className="text-sm text-gray-500">
-                Não tem uma conta de administrador?{' '}
-                <Link to="/admin-register" className="font-medium text-blue-600 hover:underline">
-                  Registrar Admin
-                </Link>
-              </p>
-              <p className="text-sm text-gray-500">
-                Área do cliente?{' '}
-                <Link to="/login" className="font-medium text-blue-600 hover:underline">
-                  Login Cliente
+                ¿Aún no tienes cuenta?{' '}
+                <Link to="/blog" className="font-medium text-blue-600 hover:underline">
+                  Ver planes
                 </Link>
               </p>
             </div>
