@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,11 +20,13 @@ import { formatCurrency } from '@/lib/utils';
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const { slug } = useParams<{ slug?: string }>();
   const { t, i18n } = useTranslation();
   const { cartItems, getCartTotal, clearCart } = useCart();
   const { currentUser } = useUser();
   const { storeInfo } = useStore();
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'credit_card' | 'debit_card' | 'pix' | 'stripe'>('pix');
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'credit_card' | 'debit_card' | 'pix' | 'stripe' | 'paypal'>('pix');
+  const [isPaypalLoading, setIsPaypalLoading] = useState(false);
   // Determinar método de entrega inicial baseado nas configurações
   const getInitialDeliveryMethod = (): 'delivery' | 'pickup' => {
     if (storeInfo.enableDelivery === true && storeInfo.enablePickup === true) {
@@ -61,7 +63,7 @@ const Checkout = () => {
     city: z.string().optional(),
     state: z.string().optional(),
     zipCode: z.string().optional(),
-    paymentMethod: z.enum(['cash', 'credit_card', 'debit_card', 'pix', 'stripe']),
+    paymentMethod: z.enum(['cash', 'credit_card', 'debit_card', 'pix', 'stripe', 'paypal']),
     change: z.string().optional(),
     notes: z.string().optional(),
   }).superRefine((vals, ctx) => {
@@ -219,6 +221,48 @@ const Checkout = () => {
   const deliveryFee = calculatedFee !== null ? calculatedFee : storeInfo.deliveryFee;
   const total = subtotal + deliveryFee;
   
+  const createPaypalOrder = async (formData: CheckoutFormData) => {
+    try {
+      setIsPaypalLoading(true);
+      const returnUrl = `${window.location.origin}${slug ? `/${slug}` : ''}/paypal-return`;
+      const cancelUrl = window.location.href;
+
+      const { data, error } = await supabase.functions.invoke('create-paypal-order', {
+        body: {
+          amount: total,
+          currency: storeInfo.currency ?? 'EUR',
+          tenantId: storeInfo.tenantId,
+          returnUrl,
+          cancelUrl,
+        }
+      });
+      if (error) throw new Error(error.message);
+      if (!data.approvalUrl) throw new Error('PayPal não retornou URL de aprovação');
+
+      // Save pending order data to sessionStorage before redirecting
+      sessionStorage.setItem('paypal_pending_order', JSON.stringify({
+        formData,
+        cartItems,
+        total,
+        deliveryFee,
+        paypalOrderId: data.orderId,
+        tenantId: storeInfo.tenantId,
+        storeName: storeInfo.name,
+        slug: slug || null,
+      }));
+
+      // Redirect user to PayPal approval page
+      window.location.href = data.approvalUrl;
+      return data.orderId;
+    } catch (error) {
+      console.error('Erro ao criar pedido PayPal:', error);
+      toast.error(t('checkout.orderError'));
+      return null;
+    } finally {
+      setIsPaypalLoading(false);
+    }
+  };
+
   const createStripePaymentIntent = async () => {
     try {
       setIsStripeLoading(true);
@@ -239,13 +283,6 @@ const Checkout = () => {
       }
       
       setClientSecret(data.clientSecret);
-      
-      if (data.clientSecret) {
-        const stripeUrl = `https://checkout.stripe.com/pay/${data.clientSecret}`;
-        window.open(stripeUrl, '_blank');
-        toast.success(t('checkout.redirectingPayment'));
-      }
-      
       return data.paymentIntentId;
       
     } catch (error) {
@@ -377,6 +414,11 @@ const Checkout = () => {
           setIsLoading(false);
           return;
         }
+      } else if (data.paymentMethod === 'paypal') {
+        // createPaypalOrder redirects to PayPal — execution stops here
+        await createPaypalOrder(data);
+        setIsLoading(false);
+        return;
       }
 
       let effectiveUserId = currentUser?.id;
@@ -411,7 +453,8 @@ const Checkout = () => {
       }
 
       const orderData = {
-        user_id: effectiveUserId, // sempre terá um ID válido
+        user_id: effectiveUserId,
+        tenant_id: storeInfo.tenantId || null,
         items: cartItems.map(item => ({
           product_id: item.productId,
           name: item.name,
@@ -433,7 +476,7 @@ const Checkout = () => {
         },
         total: total,
         delivery_fee: deliveryFee,
-        status: data.paymentMethod === 'stripe' ? 'awaiting_payment' : 'pending',
+        status: (data.paymentMethod === 'stripe' || data.paymentMethod === 'paypal') ? 'awaiting_payment' : 'pending',
         ...(paymentIntentId ? { payment_intent_id: paymentIntentId } : {}),
       };
 
@@ -449,7 +492,24 @@ const Checkout = () => {
       }
 
       toast.success(t('checkout.orderSuccess'));
-      
+
+      // Enviar email de confirmação (não bloqueia)
+      if (insertedOrders && insertedOrders[0]) {
+        supabase.functions.invoke('send-email', {
+          body: {
+            type: 'order_confirmation',
+            data: {
+              customerName: data.name,
+              customerEmail: data.email,
+              orderId: insertedOrders[0].id,
+              total,
+              items: cartItems,
+              storeName: storeInfo.name,
+            }
+          }
+        }).catch(() => {});
+      }
+
       setIsPostCheckout(true);
       clearCart();
 
@@ -478,7 +538,7 @@ const Checkout = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="md:col-span-2 space-y-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h2 className="text-lg font-semibold mb-4">{t('checkout.yourData')}</h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -526,7 +586,7 @@ const Checkout = () => {
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h2 className="text-lg font-semibold mb-4">{t('checkout.deliveryInfo')}</h2>
 
                 <div className="mb-4">
@@ -656,7 +716,7 @@ const Checkout = () => {
                 )}
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h2 className="text-lg font-semibold mb-4">{t('checkout.payment')}</h2>
                 
                 <FormField
@@ -666,9 +726,9 @@ const Checkout = () => {
                     <FormItem>
                       <FormControl>
                         <RadioGroup
-                          onValueChange={(value: 'cash' | 'credit_card' | 'debit_card' | 'pix' | 'stripe') => {
+                          onValueChange={(value: 'cash' | 'credit_card' | 'debit_card' | 'pix' | 'stripe' | 'paypal') => {
                             field.onChange(value);
-                            setPaymentMethod(value as 'cash' | 'credit_card' | 'pix' | 'stripe');
+                            setPaymentMethod(value as 'cash' | 'credit_card' | 'pix' | 'stripe' | 'paypal');
                           }}
                           value={field.value}
                           className="space-y-3"
@@ -682,13 +742,24 @@ const Checkout = () => {
                                 </FormLabel>
                               </div>
                               
+                              {storeInfo.stripePublishableKey && (
                               <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="stripe" id="stripe" />
                                 <FormLabel htmlFor="stripe" className="font-normal cursor-pointer">
                                   {t('checkout.stripe')}
                                 </FormLabel>
                               </div>
-                              
+                              )}
+
+                              {storeInfo.paypalClientId && (
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem value="paypal" id="paypal" />
+                                  <FormLabel htmlFor="paypal" className="font-normal cursor-pointer">
+                                    {t('checkout.paypal')}
+                                  </FormLabel>
+                                </div>
+                              )}
+
                               <div className="flex items-center space-x-2">
                                 <RadioGroupItem value="credit_card" id="credit_card" />
                                 <FormLabel htmlFor="credit_card" className="font-normal cursor-pointer">
@@ -754,23 +825,31 @@ const Checkout = () => {
                 )}
                 
                 {paymentMethod === 'stripe' && (
-                  <div className="mt-4 p-3 bg-blue-50 rounded-md">
-                    <p className="text-sm text-blue-700">
+                  <div className="mt-4 p-3 bg-primary/5 rounded-xl">
+                    <p className="text-sm text-primary">
                       {t('checkout.stripeRedirect')}
                     </p>
                   </div>
                 )}
-                
+
+                {paymentMethod === 'paypal' && (
+                  <div className="mt-4 p-3 bg-primary/5 rounded-xl">
+                    <p className="text-sm text-primary">
+                      {t('checkout.paypalInfo')}
+                    </p>
+                  </div>
+                )}
+
                 {paymentMethod === 'pix' && (
-                  <div className="mt-4 p-3 bg-green-50 rounded-md">
-                    <p className="text-sm text-green-700">
+                  <div className="mt-4 p-3 bg-emerald-50 rounded-xl">
+                    <p className="text-sm text-emerald-700">
                       {t('checkout.pixInfo')}
                     </p>
                   </div>
                 )}
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h2 className="text-lg font-semibold mb-4">{t('checkout.notes')}</h2>
                 
                 <FormField
@@ -792,7 +871,7 @@ const Checkout = () => {
                 />
               </div>
               
-              <div className="md:hidden bg-white rounded-lg shadow-sm p-4">
+              <div className="md:hidden bg-white rounded-2xl shadow-sm p-4">
                 <h3 className="text-lg font-semibold mb-4">{t('checkout.orderSummary')}</h3>
                 
                 <div className="space-y-3">
@@ -827,7 +906,7 @@ const Checkout = () => {
           </Form>
           
           <div className="hidden md:block h-fit">
-            <div className="bg-white rounded-lg shadow-sm p-4 sticky top-4">
+            <div className="bg-white rounded-2xl shadow-sm p-4 sticky top-4">
               <h3 className="text-lg font-semibold mb-4">{t('checkout.orderSummary')}</h3>
               
               {cartItems.map((item) => (

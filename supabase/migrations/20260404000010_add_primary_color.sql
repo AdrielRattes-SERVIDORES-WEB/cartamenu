@@ -1,0 +1,2 @@
+ALTER TABLE public.store_info
+  ADD COLUMN IF NOT EXISTS primary_color VARCHAR(7) DEFAULT '#FF5500';

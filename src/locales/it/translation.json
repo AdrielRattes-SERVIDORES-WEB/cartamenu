@@ -47,8 +47,14 @@
     "required": "Richiesto",
     "optional": "Opzionale",
     "chooseOption": "Scegli un'opzione",
+    "choose_option_single": "Scegli 1 opzione",
+    "choose_option_up_to": "Scegli fino a {{max}} opzioni",
+    "choose_option_range": "Scegli tra {{min}} e {{max}} opzioni",
+    "free": "Gratis",
+    "max_selection_error": "Puoi selezionare al massimo {{max}} opzioni",
     "from": "da",
-    "mostOrdered": "Più Ordinato"
+    "mostOrdered": "Più Ordinato",
+    "minOrder": "Ordine minimo: {{value}}"
   },
   "cart": {
     "title": "Carrello",
@@ -59,7 +65,8 @@
     "checkout": "Procedi all'Acquisto",
     "continueShopping": "Continua gli Acquisti",
     "remove": "Rimuovi",
-    "quantity": "Quantità"
+    "quantity": "Quantità",
+    "viewCart": "Vedi carrello"
   },
   "checkout": {
     "title": "Checkout",
@@ -85,6 +92,8 @@
     "creditCardOnDelivery": "Carta di Credito (alla consegna)",
     "debitCardOnDelivery": "Carta di Debito (alla consegna)",
     "stripe": "Carta di Credito/Debito Online (Stripe)",
+    "paypal": "PayPal",
+    "paypalInfo": "Sarai reindirizzato a PayPal per completare il pagamento in modo sicuro.",
     "placeOrder": "Effettua Ordine",
     "orderSummary": "Riepilogo Ordine",
     "processingOrder": "Elaborazione ordine...",
@@ -217,8 +226,15 @@
       "productDetails": "Dettagli Prodotto",
       "productOptions": "Opzioni Prodotto",
       "addOption": "Aggiungi Opzione",
+      "addVariation": "Aggiungi Variazione",
       "optionName": "Nome Opzione",
       "variations": "Variazioni",
+      "allowMultipleLabel": "Consenti selezioni multiple?",
+      "allowMultipleDescription": "Consenti di selezionare più di una variante per questa opzione",
+      "requiredDescription": "Il cliente deve scegliere almeno un'opzione",
+      "edit": "Modifica Prodotto",
+      "editDescription": "Modifica i dettagli del prodotto qui sotto.",
+      "addDescription": "Compila i dettagli per il nuovo prodotto.",
       "saveProduct": "Salva Prodotto",
       "deleteConfirm": "Sei sicuro di voler eliminare questo prodotto?"
     },

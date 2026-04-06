@@ -13,17 +13,25 @@ import { useStore } from '@/contexts/StoreContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { formatCurrency } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
+import { useProductVariationGroups } from '@/hooks/useProductVariationGroups';
+import VariationGroupSelect from '@/components/VariationGroupSelect';
+import { useTenant } from '@/contexts/TenantContext';
 
 const ProductDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, slug } = useParams<{ id: string; slug?: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { storeInfo } = useStore();
+  const { tenantId } = useTenant();
+  const { t } = useTranslation();
   const [quantity, setQuantity] = useState(1);
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string[]>>({});
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, { variantId: string; qty: number }[]>>({});
+  const [selectedVariationGroups, setSelectedVariationGroups] = useState<Record<string, string[] | string>>({});
   const [product, setProduct] = useState<any>(null);
   const [productOptions, setProductOptions] = useState<ProductOption[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { groups: variationGroups } = useProductVariationGroups(id || '');
   
   useEffect(() => {
     const fetchProduct = async () => {
@@ -32,15 +40,10 @@ const ProductDetail = () => {
         
         if (!id) return;
         
-        // Buscar produto
-        const { data: productData, error: productError } = await supabase
-          .from('products')
-          .select(`
-            *,
-            categories (name)
-          `)
-          .eq('id', id)
-          .single();
+        // Buscar produto (filtrado por tenant se disponível)
+        let productQuery = supabase.from('products').select('*, categories (name)').eq('id', id);
+        if (tenantId) productQuery = productQuery.eq('tenant_id', tenantId);
+        const { data: productData, error: productError } = await productQuery.single();
         
         if (productError) {
           console.error("Error fetching product:", productError);
@@ -71,12 +74,14 @@ const ProductDetail = () => {
             category: productData.categories?.name || "Sem categoria"
           });
           
-          // Converter opções para o formato esperado
+          // Converter opções para o formato esperado (respeitando possíveis campos do admin)
           const formattedOptions: ProductOption[] = (optionsData || []).map(option => ({
             id: option.id,
             title: option.title,
             required: option.required || false,
-            maxOptions: option.required ? 1 : undefined,
+            allowMultiple: option.allow_multiple ?? false,
+            minSelections: typeof option.min_selections === 'number' ? option.min_selections : undefined,
+            maxSelections: typeof option.max_selections === 'number' ? option.max_selections : (option.required ? 1 : undefined),
             variations: (option.option_variations || []).map(variation => ({
               id: variation.id,
               name: variation.name,
@@ -95,8 +100,8 @@ const ProductDetail = () => {
     };
     
     fetchProduct();
-  }, [id]);
-  
+  }, [id, tenantId]);
+
   const handleBack = () => {
     navigate(-1);
   };
@@ -114,25 +119,39 @@ const ProductDetail = () => {
   const handleRadioChange = (optionId: string, variationId: string) => {
     setSelectedOptions(prev => ({
       ...prev,
-      [optionId]: [variationId]
+      [optionId]: [{ variantId: variationId, qty: 1 }]
     }));
   };
   
   const handleCheckboxChange = (optionId: string, variationId: string, checked: boolean) => {
     setSelectedOptions(prev => {
       const currentSelections = prev[optionId] || [];
-      
+
       if (checked) {
+        // Max selections check
+        const option = productOptions.find(o => o.id === optionId);
+        if (option?.maxSelections && currentSelections.length >= option.maxSelections) {
+          toast.error(t('menu.max_selection_error', { max: option.maxSelections }));
+          return prev;
+        }
         return {
           ...prev,
-          [optionId]: [...currentSelections, variationId]
+          [optionId]: [...currentSelections, { variantId: variationId, qty: 1 }]
         };
       } else {
         return {
           ...prev,
-          [optionId]: currentSelections.filter(id => id !== variationId)
+          [optionId]: currentSelections.filter(s => s.variantId !== variationId)
         };
       }
+    });
+  };
+
+  const changeVariantQty = (optionId: string, variantId: string, delta: number) => {
+    setSelectedOptions(prev => {
+      const currentSelections = prev[optionId] || [];
+      const next = currentSelections.map(s => s.variantId === variantId ? { ...s, qty: Math.max(1, s.qty + delta) } : s);
+      return { ...prev, [optionId]: next };
     });
   };
   
@@ -141,14 +160,29 @@ const ProductDetail = () => {
     
     let total = product.price;
     
-    Object.entries(selectedOptions).forEach(([optionId, variationIds]) => {
+    // Add product options prices
+    Object.entries(selectedOptions).forEach(([optionId, selections]) => {
       const option = productOptions.find(opt => opt.id === optionId);
       if (!option) return;
-      
-      variationIds.forEach(varId => {
-        const variation = option.variations.find(v => v.id === varId);
+
+      selections.forEach(sel => {
+        const variation = option.variations.find(v => v.id === sel.variantId);
         if (variation) {
-          total += variation.price;
+          total += variation.price * (sel.qty || 1);
+        }
+      });
+    });
+
+    // Add variation groups prices
+    Object.entries(selectedVariationGroups).forEach(([groupId, selected]) => {
+      const group = variationGroups.find(g => g.id === groupId);
+      if (!group) return;
+
+      const selectedArray = Array.isArray(selected) ? selected : (selected ? [selected] : []);
+      selectedArray.forEach(itemId => {
+        const item = group.items.find(i => i.id === itemId);
+        if (item) {
+          total += item.price;
         }
       });
     });
@@ -164,11 +198,23 @@ const ProductDetail = () => {
     Object.entries(selectedOptions).forEach(([optionId, variationIds]) => {
       const option = productOptions.find(opt => opt.id === optionId);
       if (option) {
-        selectedOptionsWithNames[option.title] = variationIds.map(varId => {
-          const variation = option.variations.find(v => v.id === varId);
-          return variation ? variation.name : '';
+        selectedOptionsWithNames[option.title] = variationIds.map(sel => {
+          const variation = option.variations.find(v => v.id === sel.variantId);
+          return variation ? `${variation.name}${sel.qty && sel.qty > 1 ? ` x${sel.qty}` : ''}` : '';
         }).filter(name => name !== '');
       }
+    });
+
+    // Add variation groups to selected options
+    Object.entries(selectedVariationGroups).forEach(([groupId, selected]) => {
+      const group = variationGroups.find(g => g.id === groupId);
+      if (!group) return;
+
+      const selectedArray = Array.isArray(selected) ? selected : (selected ? [selected] : []);
+      selectedOptionsWithNames[group.title] = selectedArray.map(itemId => {
+        const item = group.items.find(i => i.id === itemId);
+        return item ? item.title : '';
+      }).filter(name => name !== '');
     });
     
     addToCart({
@@ -182,11 +228,15 @@ const ProductDetail = () => {
       totalPrice: calculateTotalPrice(),
     });
     
-    navigate('/cart');
+    navigate(slug ? `/${slug}/cart` : '/cart');
   };
   
   const isButtonDisabled = !product || productOptions.some(option => {
-    return option.required && (!selectedOptions[option.id] || selectedOptions[option.id].length === 0);
+    const selections = selectedOptions[option.id] || [];
+    if (option.required && selections.length === 0) return true;
+    if (option.minSelections && selections.length < option.minSelections) return true;
+    if (option.maxSelections && selections.length > option.maxSelections) return true;
+    return false;
   });
   
   if (isLoading) {
@@ -194,7 +244,7 @@ const ProductDetail = () => {
       <div className="min-h-screen bg-white">
         <Header restaurantName={storeInfo.name} showSearch={false} />
         <div className="p-4 text-center">
-          <p>Carregando produto...</p>
+          <p>{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -205,9 +255,9 @@ const ProductDetail = () => {
       <div className="min-h-screen bg-white">
         <Header restaurantName={storeInfo.name} showSearch={false} />
         <div className="p-4 text-center">
-          <p>Produto não encontrado</p>
+          <p>{t('common.error')}</p>
           <Button onClick={() => navigate('/')} className="mt-4">
-            Voltar para a página inicial
+            {t('common.back')}
           </Button>
         </div>
       </div>
@@ -247,7 +297,7 @@ const ProductDetail = () => {
           </p>
         )}
         <p className="mt-2 font-semibold text-xl">
-          A partir de {formatCurrency(product.price, storeInfo.currency ?? 'EUR')}
+          {t('menu.from')} {formatCurrency(product.price, storeInfo.currency ?? 'EUR')}
         </p>
       </div>
       
@@ -265,27 +315,32 @@ const ProductDetail = () => {
                   <div className="flex justify-between items-center mb-3">
                     <h2 className="font-semibold text-lg">{option.title}</h2>
                     {option.required && (
-                      <span className="bg-gray-900 text-white text-xs font-semibold px-2 py-1 rounded">
-                        OBRIGATÓRIO
+                      <span className="bg-gray-900 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                        {t('menu.required')}
                       </span>
                     )}
                   </div>
                   <p className="text-base text-gray-500 mb-4">
-                    Escolha {option.maxOptions ? `até ${option.maxOptions}` : '1'} opção
+                    {option.minSelections && option.maxSelections
+                      ? t('menu.choose_option_range', { min: option.minSelections, max: option.maxSelections })
+                      : option.maxSelections && option.maxSelections > 1
+                        ? t('menu.choose_option_up_to', { max: option.maxSelections })
+                        : t('menu.choose_option_single')
+                    }
                   </p>
 
                   <div className="space-y-5">
                     {option.variations.map(variation => {
-                      const checked = option.maxOptions && option.maxOptions > 1
-                        ? selectedOptions[option.id]?.includes(variation.id)
-                        : selectedOptions[option.id]?.[0] === variation.id;
+                      const sel = (selectedOptions[option.id] || []).find(s => s.variantId === variation.id);
+                      const checked = !!sel;
 
                       return (
                         <button
                           key={variation.id}
                           type="button"
                           onClick={() => {
-                            if (option.maxOptions && option.maxOptions > 1) {
+                            const multi = option.allowMultiple || (option.maxSelections && option.maxSelections > 1);
+                            if (multi) {
                               handleCheckboxChange(
                                 option.id,
                                 variation.id,
@@ -301,10 +356,10 @@ const ProductDetail = () => {
                             px-6 py-5 text-lg font-semibold
                             ${
                               checked
-                                ? 'border-red-600 bg-red-50 ring-2 ring-red-400 text-red-700'
-                                : 'border-gray-200 bg-gray-50 hover:border-red-400 hover:bg-red-100 text-gray-900'
+                                ? 'border-primary bg-primary/5 ring-2 ring-primary/40 text-primary'
+                                : 'border-gray-200 bg-gray-50 hover:border-primary/50 hover:bg-primary/5 text-gray-900'
                             }
-                            focus:outline-none focus:ring-2 focus:ring-red-400
+                            focus:outline-none focus:ring-2 focus:ring-primary/40
                             active:scale-97
                           `}
                         >
@@ -312,7 +367,7 @@ const ProductDetail = () => {
                             {/* Elemento visual para radio/checkbox */}
                             <span
                               className={`
-                                ${option.maxOptions && option.maxOptions > 1
+                                ${option.allowMultiple || (option.maxSelections && option.maxSelections > 1)
                                   ? 'h-7 w-7 rounded-md'
                                   : 'h-7 w-7 rounded-full'
                                 }
@@ -320,7 +375,7 @@ const ProductDetail = () => {
                                 mr-2
                                 ${
                                   checked
-                                    ? 'border-red-600 bg-red-500'
+                                    ? 'border-primary bg-primary'
                                     : 'border-gray-300 bg-white'
                                 }
                               `}
@@ -328,7 +383,7 @@ const ProductDetail = () => {
                               {checked && (
                                 <span
                                   className={`
-                                    block ${option.maxOptions && option.maxOptions > 1
+                                    block ${option.maxSelections && option.maxSelections > 1
                                       ? 'w-4 h-4 rounded-[3px]'
                                       : 'w-4 h-4 rounded-full'
                                     } bg-white`}
@@ -337,16 +392,61 @@ const ProductDetail = () => {
                             </span>
                             <span>{variation.name}</span>
                           </div>
-                          <span className={`${variation.price > 0 ? "text-red-700 font-bold" : "text-gray-500 font-medium"}`}>
-                            {variation.price > 0
-                              ? <>+ {formatCurrency(variation.price, storeInfo.currency ?? 'EUR')}</>
-                              : <>Grátis</>
-                            }
-                          </span>
+                            <div className="flex items-center gap-4">
+                              <span className={`${variation.price > 0 ? "text-red-700 font-bold" : "text-gray-500 font-medium"}`}>
+                                {variation.price > 0
+                                  ? <>+ {formatCurrency(variation.price, storeInfo.currency ?? 'EUR')}</>
+                                  : <>{t('menu.free')}</>
+                                }
+                              </span>
+
+                              {checked && (
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); changeVariantQty(option.id, variation.id, -1); }}
+                                    className="px-3 py-1 bg-gray-100 rounded"
+                                    aria-label="Diminuir quantidade"
+                                  >
+                                    -
+                                  </button>
+                                  <div className="px-3">{sel?.qty ?? 1}</div>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); changeVariantQty(option.id, variation.id, +1); }}
+                                    className="px-3 py-1 bg-gray-100 rounded"
+                                    aria-label="Aumentar quantidade"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                         </button>
                       );
                     })}
                   </div>
+                </div>
+              </Card>
+            ))}
+
+            {/* Render Variation Groups */}
+            {variationGroups.map(group => (
+              <Card 
+                key={group.id} 
+                className="mb-6 border-0 shadow-none px-0"
+              >
+                <div className="p-4">
+                  <VariationGroupSelect
+                    group={group}
+                    selected={selectedVariationGroups[group.id] || []}
+                    onSelect={(selected) => {
+                      setSelectedVariationGroups(prev => ({
+                        ...prev,
+                        [group.id]: selected
+                      }));
+                    }}
+                    allowMultiple={false}
+                    currency={storeInfo.currency}
+                  />
                 </div>
               </Card>
             ))}
@@ -383,15 +483,15 @@ const ProductDetail = () => {
 
         <Button
           className={`
-            big-btn text-lg py-4 gap-3 rounded-xl font-bold
-            bg-red-600 hover:bg-red-700 transition-all
+            big-btn text-lg py-4 gap-3 rounded-full font-bold
+            bg-primary hover:bg-primary/90 text-white transition-all
             w-full mt-3 md:w-auto md:ml-3 md:mt-0
           `}
           disabled={isButtonDisabled}
           onClick={handleAddToCart}
         >
           <ShoppingCart className="h-6 w-6" />
-          Adicionar
+          {t('menu.addToCart')}
           <span className="ml-1 font-bold">
             {formatCurrency(calculateTotalPrice(), storeInfo.currency ?? 'EUR')}
           </span>

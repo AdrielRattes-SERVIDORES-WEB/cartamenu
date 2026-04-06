@@ -10,6 +10,8 @@ import {
   ListOrdered, 
   Settings, 
   Layers, 
+  Zap,
+  Menu,
   LogOut 
 } from 'lucide-react';
 import { LanguageSelector } from './LanguageSelector';
@@ -75,6 +77,18 @@ const AdminSidebar = () => {
             <Package size={18} />
             <span>{t('admin.products')}</span>
           </NavLink>
+
+          <NavLink 
+            to="/admin/menu-ordering" 
+            className={({isActive}) => 
+              `flex items-center gap-3 p-3 rounded-md transition-all ${
+                isActive ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100'
+              }`
+            }
+          >
+            <Menu size={18} />
+            <span>{t('variation_group.menuOrdering')}</span>
+          </NavLink>
           
           <NavLink 
             to="/admin/categories" 
@@ -86,6 +100,18 @@ const AdminSidebar = () => {
           >
             <Layers size={18} />
             <span>{t('admin.categories')}</span>
+          </NavLink>
+          
+          <NavLink 
+            to="/admin/variation-groups" 
+            className={({isActive}) => 
+              `flex items-center gap-3 p-3 rounded-md transition-all ${
+                isActive ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100'
+              }`
+            }
+          >
+            <Zap size={18} />
+            <span>{t('variation_group.variations')}</span>
           </NavLink>
           
           <NavLink 

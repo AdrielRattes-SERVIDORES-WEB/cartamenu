@@ -9,7 +9,10 @@ export type ProductOption = {
   id: string;
   title: string;
   required: boolean;
-  maxOptions?: number;
+  maxOptions?: number; // legacy - prefer `maxSelections`
+  allowMultiple?: boolean;
+  minSelections?: number;
+  maxSelections?: number;
   variations: ProductVariation[];
 };
 
@@ -57,6 +60,19 @@ export type StoreInfo = {
   enableDelivery?: boolean;
   enablePickup?: boolean;
   currency?: 'EUR';
+  // Stripe configuration
+  stripePublishableKey?: string | null;
+  stripeSecretKey?: string | null;
+  stripeWebhookSecret?: string | null;
+  stripeMode?: 'test' | 'live' | string | null;
+  // PayPal configuration
+  paypalClientId?: string | null;
+  paypalSecret?: string | null;
+  paypalMode?: 'sandbox' | 'live' | string | null;
+  // Theme
+  primaryColor?: string | null;
+  // Tenant
+  tenantId?: string | null;
 };
 
 export type OrderStatus = 'pending' | 'processing' | 'delivering' | 'delivered' | 'cancelled';
@@ -108,6 +124,10 @@ export type ProductOptionDB = {
   product_id: string;
   title: string;
   required: boolean;
+  allow_multiple?: boolean | null;
+  min_selections?: number | null;
+  max_selections?: number | null;
+  position?: number;
   created_at?: string;
   updated_at?: string;
   option_variations?: OptionVariationDB[];
@@ -118,8 +138,54 @@ export type OptionVariationDB = {
   option_id: string;
   name: string;
   price: number;
+  position?: number;
   created_at?: string;
   updated_at?: string;
+};
+
+// Variation Groups (reusable across products)
+export type VariationGroupItem = {
+  id: string;
+  title: string;
+  price: number;
+  sku?: string;
+  position?: number;
+};
+
+export type VariationGroup = {
+  id: string;
+  title: string;
+  description?: string;
+  position?: number;
+  items: VariationGroupItem[];
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type VariationGroupDB = {
+  id: string;
+  title: string;
+  description?: string | null;
+  position: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type VariationGroupItemDB = {
+  id: string;
+  group_id: string;
+  title: string;
+  price: number;
+  sku?: string | null;
+  position: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type ProductVariationGroupDB = {
+  product_id: string;
+  variation_group_id: string;
+  position: number;
 };
 
 // Supabase Orders Database Type

@@ -1,17 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
+import NotFound from './NotFound';
 import Header from '@/components/Header';
 import RestaurantHero from '@/components/RestaurantHero';
-import RestaurantInfo from '@/components/RestaurantInfo';
 import FeaturedItems from '@/components/FeaturedItems';
 import MenuTabs from '@/components/MenuTabs';
 import MenuItem from '@/components/MenuItem';
-import DeliveryBanner from '@/components/DeliveryBanner';
+import StickyCartBar from '@/components/StickyCartBar';
 import type { FoodItem } from '@/components/FeaturedItems';
 import { supabase } from '@/integrations/supabase/client';
 import { useStore } from '@/contexts/StoreContext';
+import { useTenant } from '@/contexts/TenantContext';
 import { toast } from 'sonner';
 import { useUser } from '@/contexts/UserContext';
 
@@ -50,6 +51,8 @@ const Index = () => {
   const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { storeInfo, loading: storeLoading } = useStore();
+  const { tenantId, loading: tenantLoading } = useTenant();
+  const { slug } = useParams<{ slug?: string }>();
   const { logout } = useUser();
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -69,10 +72,6 @@ const Index = () => {
   }, [searchParams, i18n]);
 
   // Adicionar logs para depuração
-  useEffect(() => {
-    console.log("[Index] storeInfo atualizado:", storeInfo);
-  }, [storeInfo]);  
-
   // Buscar produtos e categorias do Supabase
   useEffect(() => {
     const fetchProducts = async () => {
@@ -80,71 +79,60 @@ const Index = () => {
         setIsLoading(true);
         setLoadError(null);
 
-        console.log("[Index] Buscando categorias do Supabase...");
-        const { data: categoriesData, error: categoriesError } = await supabase
-          .from('categories')
-          .select('*')
-          .order('name', { ascending: true });
+        if (!tenantId) return;
 
-        // --- NOVO TRATAMENTO DE ERRO JWT EXPIRED ---
-        if (categoriesError?.message?.toLowerCase().includes("jwt expired")) {
-          // Mensagem clara e forçar logout
+        // Paralelizar categories + products (economiza ~200ms)
+        const [categoriesResult, productsResult] = await Promise.all([
+          supabase
+            .from('categories')
+            .select('*')
+            .eq('tenant_id', tenantId)
+            .order('name', { ascending: true }),
+          supabase
+            .from('products')
+            .select('*, categories (name)')
+            .eq('tenant_id', tenantId)
+            .order('position', { ascending: true })
+            .order('name', { ascending: true }),
+        ]);
+
+        const { data: categoriesData, error: categoriesError } = categoriesResult;
+        const { data: productsData, error: productsError } = productsResult;
+
+        if (categoriesError?.message?.toLowerCase().includes("jwt expired") ||
+            productsError?.message?.toLowerCase().includes("jwt expired")) {
           setLoadError(t('common.error'));
           setIsLoading(false);
-          setTimeout(() => {
-            logout();
-          }, 2000);
+          setTimeout(() => logout(), 2000);
           return;
         }
-        // --------------------------------------------
 
         if (categoriesError) {
-          console.error("[Index] Erro ao buscar categorias:", categoriesError);
           setLoadError(t('common.error') + ': ' + categoriesError.message);
-          setCategories([]);
-          setCategoryItems({});
-          setFoodItems([]);
+          setCategories([]); setCategoryItems({}); setFoodItems([]);
           return;
         }
 
         if (!categoriesData || categoriesData.length === 0) {
-          console.warn("[Index] Nenhuma categoria cadastrada.");
-          setCategories([]);
-          setCategoryItems({});
+          setCategories([]); setCategoryItems({});
           setLoadError(t('common.error'));
           setFoodItems([]);
           setIsLoading(false);
           return;
         }
 
-        console.log("[Index] Categorias encontradas:", categoriesData);
-
-        // Buscar produtos com nomes de categorias
-        console.log("[Index] Buscando produtos do Supabase...");
-        const { data: productsData, error: productsError } = await supabase
-          .from('products')
-          .select(`
-            *,
-            categories (name)
-          `)
-          .order('name', { ascending: true });
-
         if (productsError) {
-          console.error("[Index] Erro ao buscar produtos:", productsError);
           setLoadError(t('common.error') + ': ' + productsError.message);
           setFoodItems([]);
           return;
         }
 
         if (!productsData || productsData.length === 0) {
-          console.warn("[Index] Nenhum produto cadastrado.");
           setFoodItems([]);
           setLoadError(t('common.error'));
           setIsLoading(false);
           return;
         }
-
-        console.log("[Index] Produtos encontrados:", productsData);
 
         // Mapear produtos para o formato FoodItem
         const formattedProducts = productsData.map(product => ({
@@ -200,61 +188,87 @@ const Index = () => {
     };
 
     fetchProducts();
-  }, [t]);
+  }, [t, tenantId]);
 
-  // --------------------------
-  // NOVO LOADING ENQUANTO STORE CARREGA
-  // --------------------------
-  if (storeLoading) {
+  // Slug na URL mas tenant não encontrado → 404
+  if (slug && !tenantLoading && !tenantId) {
+    return <NotFound />;
+  }
+
+  if (tenantLoading || storeLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mb-4"></div>
-        <div className="text-blue-500 font-medium">{t('common.loading')}</div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#FAF6F1]">
+        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-[#FAF6F1] pb-28">
       <Header 
         restaurantName={storeInfo.name}
         showSearch={true}
       />
 
-      <RestaurantHero 
-        coverImage={storeInfo.banner}
-        logo={storeInfo.logo}
-      />
+      {/* Banner */}
+      <RestaurantHero coverImage={storeInfo.banner} logo={storeInfo.logo} />
 
-      <div className="bg-white pt-8">
-        {/* Logo redondo posicionado acima do RestaurantInfo */}
-        <div className="flex justify-center pb-6">
-          <div className="w-32 h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-full shadow-xl flex items-center justify-center overflow-hidden">
-            {/* Garante que a logo usa storeInfo.logo mais atualizado */}
-            <img 
-              src={storeInfo.logo} 
-              alt="Restaurant logo"
+      {/* Info card — sobe sobre o banner com border-radius + logo saindo pelo topo */}
+      <div className="bg-[#FAF6F1] -mt-5 rounded-t-3xl relative z-10 px-4 pt-4 pb-3">
+        <div className="flex items-start gap-3">
+          {/* Logo — sai pelo topo do card */}
+          <div className="-mt-14 flex-shrink-0 w-24 h-24 rounded-full border-4 border-[#FAF6F1] shadow-xl overflow-hidden">
+            <img
+              src={storeInfo.logo || '/placeholder.svg'}
+              alt="Logo"
               className="w-full h-full object-cover"
-              onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }}
+              onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
             />
           </div>
+          {/* Nome + tipo */}
+          <div className="pt-1 min-w-0">
+            <h1
+              className="font-display text-[1.3rem] font-bold text-stone-900 tracking-tight leading-tight"
+              style={{ fontVariationSettings: "'opsz' 32, 'SOFT' 30" }}
+            >
+              {storeInfo.name}
+            </h1>
+            <p className="text-sm text-gray-500 mt-0.5 truncate">{storeInfo.cuisineType}</p>
+          </div>
         </div>
-        
-        <RestaurantInfo
-          name={storeInfo.name}
-          cuisine={storeInfo.cuisineType}
-          distance="2,0 km"
-          minOrder={formatCurrency(storeInfo.minOrder, storeInfo.currency ?? 'EUR')}
-          rating={4.8}
-          reviews={1400}
-          deliveryTime="55-65 min"
-          deliveryFee={formatCurrency(storeInfo.deliveryFee, storeInfo.currency ?? 'EUR')}
-        />
+
+        {/* Meta */}
+        <div className="mt-2 flex items-center gap-1.5 text-xs text-gray-400 flex-wrap">
+          <span>2,0 km</span>
+          <span>·</span>
+          <span>{t('menu.minOrder', { value: formatCurrency(storeInfo.minOrder, storeInfo.currency ?? 'EUR') })}</span>
+        </div>
+
+        {/* Pills */}
+        <div className="mt-3 flex items-center gap-2 flex-wrap">
+          <button className="flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100/70 rounded-full px-3 py-1.5 transition-colors">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" className="text-amber-400 flex-shrink-0">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            <span className="text-sm font-semibold text-stone-800">4.8</span>
+            <span className="text-xs text-stone-400">(1400)</span>
+          </button>
+          <div className="flex items-center gap-1.5 bg-stone-100/80 rounded-full px-3 py-1.5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-stone-500 flex-shrink-0">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span className="text-sm text-stone-600">55–65 min</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-stone-100/80 rounded-full px-3 py-1.5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-stone-500 flex-shrink-0">
+              <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+            <span className="text-sm text-stone-600">{formatCurrency(storeInfo.deliveryFee, storeInfo.currency ?? 'EUR')}</span>
+          </div>
+        </div>
       </div>
-      
-      <div className="h-2 bg-gray-50"></div>
-      
-      <div className="bg-white">
+
+      <div className="bg-white/70 px-4 py-5">
         {isLoading ? (
           <div className="p-8 text-center">{t('common.loading')}</div>
         ) : loadError ? (
@@ -265,10 +279,10 @@ const Index = () => {
           <FeaturedItems title={t('menu.featured')} items={foodItems} />
         )}
       </div>
-      
-      <div className="h-2 bg-gray-50"></div>
-      
-      <div className="bg-white">
+
+      <div className="h-2 bg-[#FAF6F1]"></div>
+
+      <div className="bg-white/70">
         {isLoading ? (
           <div className="p-8 text-center">{t('common.loading')}</div>
         ) : loadError ? (
@@ -277,21 +291,21 @@ const Index = () => {
           </div>
         ) : categories.length > 0 ? (
           <>
-            <MenuTabs 
-              tabs={categories} 
-              activeTab={activeTab} 
-              onTabChange={setActiveTab} 
+            <MenuTabs
+              tabs={categories}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
             />
-            
-            <div className="p-4">
-              <h2 className="text-xl font-bold mb-4">{activeTab}</h2>
-              <div className="space-y-4">
+
+            <div className="p-4 max-w-full overflow-hidden">
+              <h2 className="font-display text-xl font-bold mb-4 text-stone-800" style={{ fontVariationSettings: "'opsz' 24, 'SOFT' 30" }}>{activeTab}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-full">
                 {categoryItems[activeTab]?.length > 0 ? (
                   categoryItems[activeTab]?.map(item => (
                     <MenuItem key={item.id} item={item} />
                   ))
                 ) : (
-                  <p className="text-gray-500 text-center py-4">{t('common.search')}</p>
+                  <p className="text-gray-500 text-center py-4 col-span-full">{t('common.search')}</p>
                 )}
               </div>
             </div>
@@ -303,7 +317,7 @@ const Index = () => {
         )}
       </div>
       
-      <DeliveryBanner threshold={60} />
+      <StickyCartBar />
     </div>
   );
 };

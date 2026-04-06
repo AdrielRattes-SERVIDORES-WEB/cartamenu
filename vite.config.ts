@@ -6,6 +6,7 @@ import path from "path";
 
 // Use the function format to include componentTagger in dev mode per Lovable requirements
 export default defineConfig(({ mode }) => ({
+  base: '/',
   plugins: [
     react(),
     mode === "development" && componentTagger()

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Trash, Minus, Plus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { formatCurrency } from '@/lib/utils';
 
 const Cart = () => {
   const navigate = useNavigate();
+  const { slug } = useParams<{ slug?: string }>();
   const { t } = useTranslation();
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
   const { storeInfo } = useStore();
@@ -20,7 +21,7 @@ const Cart = () => {
   const total = subtotal + deliveryFee;
   
   const handleCheckout = () => {
-    navigate('/checkout');
+    navigate(slug ? `/${slug}/checkout` : '/checkout');
   };
   
   if (cartItems.length === 0) {
@@ -54,10 +55,10 @@ const Cart = () => {
         <h1 className="text-2xl md:text-3xl font-bold mb-7">{t('cart.title')}</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col gap-0">
               {cartItems.map(item => (
-                <div key={item.id} className="p-4 md:p-6 border-b last:border-b-0 flex gap-4">
-                  <div className="h-24 w-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-100">
+                <div key={item.id} className="p-4 md:p-5 flex gap-4">
+                  <div className="h-24 w-24 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-100">
                     <img 
                       src={item.image} 
                       alt={item.name} 
@@ -68,33 +69,29 @@ const Cart = () => {
                     <h3 className="font-bold mb-1 text-lg">{item.name}</h3>
                     {Object.keys(item.selectedOptions).length > 0 && (
                       <div className="text-sm text-gray-500 mb-2">
-                        <p>Opções selecionadas:</p>
-                        {Object.entries(item.selectedOptions).map(([optionId, variationIds]) => (
-                          <div key={optionId}>
-                            {variationIds.map(variationId => (
-                              <span key={variationId} className="mr-2">
-                                • {variationId.includes('-') ? variationId.split('-')[1] || variationId : variationId}
-                              </span>
-                            ))}
+                        {Object.entries(item.selectedOptions).map(([groupName, values]) => (
+                          <div key={groupName}>
+                            <span className="font-medium">{groupName}: </span>
+                            {values.join(', ')}
                           </div>
                         ))}
                       </div>
                     )}
                     <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
-                      <div className="flex items-center border rounded-md">
+                      <div className="flex items-center border border-gray-200 rounded-full overflow-hidden">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="px-4 py-2 text-gray-600 text-xl"
+                          className="px-3 py-2 text-gray-500 hover:text-gray-800 transition-colors"
                           disabled={item.quantity <= 1}
                         >
                           <Minus className="h-4 w-4" />
                         </button>
-                        <div className="px-4 py-2 border-x font-bold text-lg">
+                        <div className="px-3 py-2 border-x border-gray-200 font-bold text-base min-w-[2.5rem] text-center">
                           {item.quantity}
                         </div>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="px-4 py-2 text-gray-600 text-xl"
+                          className="px-3 py-2 text-gray-500 hover:text-gray-800 transition-colors"
                         >
                           <Plus className="h-4 w-4" />
                         </button>
@@ -122,7 +119,7 @@ const Cart = () => {
               </Button>
             </div>
           </div>
-          <div className="bg-white rounded-xl shadow-md p-6 h-fit">
+          <div className="bg-white rounded-2xl shadow-sm p-6 h-fit">
             <h3 className="text-lg md:text-xl font-semibold mb-5">{t('checkout.orderSummary')}</h3>
             <div className="space-y-4">
               <div className="flex justify-between">

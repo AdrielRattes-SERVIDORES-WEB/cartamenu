@@ -6,26 +6,29 @@ import { ShoppingBag, Users, ArrowDown, ArrowUp, Package } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format, parseISO } from 'date-fns';
 import { useStore } from '@/contexts/StoreContext';
+import { useTenant } from '@/contexts/TenantContext';
 import { formatCurrency } from '@/lib/utils';
 
 const AdminDashboard = () => {
   const { t } = useTranslation();
   const { storeInfo } = useStore();
+  const { tenantId } = useTenant();
   const [ordersCount, setOrdersCount] = useState<number | null>(null);
   const [productsCount, setProductsCount] = useState<number | null>(null);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
 
   useEffect(() => {
+    if (!tenantId) return;
     const fetchDashboard = async () => {
-      const { count: oCount } = await supabase.from('orders').select('id', { count: 'exact', head: true });
+      const { count: oCount } = await supabase.from('orders').select('id', { count: 'exact', head: true }).eq('tenant_id', tenantId);
       setOrdersCount(typeof oCount === 'number' ? oCount : null);
-      const { count: pCount } = await supabase.from('products').select('id', { count: 'exact', head: true });
+      const { count: pCount } = await supabase.from('products').select('id', { count: 'exact', head: true }).eq('tenant_id', tenantId);
       setProductsCount(typeof pCount === 'number' ? pCount : null);
-      const { data: recent } = await supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(4);
+      const { data: recent } = await supabase.from('orders').select('*').eq('tenant_id', tenantId).order('created_at', { ascending: false }).limit(4);
       setRecentOrders(recent || []);
     };
     fetchDashboard();
-  }, []);
+  }, [tenantId]);
   
   return (
     <div className="space-y-6">

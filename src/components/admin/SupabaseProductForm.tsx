@@ -14,20 +14,38 @@ import { Tables } from '@/integrations/supabase/types';
 import { ProductOptionDB, OptionVariationDB } from '@/types/product';
 import { toast } from 'sonner';
 import { X, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useTenant } from '@/contexts/TenantContext';
+import ProductVariationGroups from './ProductVariationGroups';
 
 // Esquema Zod para opções do produto (variantes)
-const productOptionSchema = z.object({
+const productOptionSchemaBase = z.object({
   id: z.string().optional(),
-  title: z.string().min(1, { message: "Título da opção é obrigatório" }),
+  title: z.string().min(1, { message: 'Título da opção é obrigatório' }),
   required: z.boolean().default(false),
+  allowMultiple: z.boolean().default(false),
+  minSelections: z.number().int().min(0, { message: 'Mínimo deve ser 0 ou maior' }).nullable().optional(),
+  maxSelections: z.number().int().min(0, { message: 'Máximo deve ser 0 ou maior' }).nullable().optional(),
   variations: z.array(z.object({
     id: z.string().optional(),
-    name: z.string().min(1, { message: "Nome da variante é obrigatório" }),
+    name: z.string().min(1, { message: 'Nome da variante é obrigatório' }),
     price: z.preprocess(
       (val) => (typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val),
-      z.number().min(0, { message: "Preço deve ser maior ou igual a zero." })
+      z.number().min(0, { message: 'Preço deve ser maior ou igual a zero.' })
     ),
-  })).min(1, { message: "Adicione ao menos uma variante" })
+  })).min(1, { message: 'Adicione ao menos uma variante' })
+});
+
+const productOptionSchema = productOptionSchemaBase.superRefine((opt, ctx) => {
+  if (typeof opt.minSelections === 'number' && typeof opt.maxSelections === 'number') {
+    if (opt.maxSelections < opt.minSelections) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Máximo deve ser maior ou igual ao mínimo',
+        path: ['maxSelections'],
+      });
+    }
+  }
 });
 
 // Esquema Zod para validação do formulário de produto
@@ -57,6 +75,8 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
   const [categories, setCategories] = useState<Tables<'categories'>[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [productOptions, setProductOptions] = useState<ProductOptionDB[]>([]);
+  const { t } = useTranslation();
+  const { tenantId } = useTenant();
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
@@ -113,7 +133,9 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const { data, error } = await supabase.from('categories').select('*').order('name');
+      let query = supabase.from('categories').select('*').order('name');
+      if (tenantId) query = query.eq('tenant_id', tenantId);
+      const { data, error } = await query;
       if (error) {
         toast.error("Erro ao buscar categorias.");
         console.error(error);
@@ -167,6 +189,9 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
           id: option.id,
           title: option.title,
           required: option.required,
+          allowMultiple: option.allow_multiple ?? false,
+          minSelections: typeof option.min_selections === 'number' ? option.min_selections : undefined,
+          maxSelections: typeof option.max_selections === 'number' ? option.max_selections : undefined,
           variations: option.option_variations ? option.option_variations.map((variation) => ({
             id: variation.id,
             name: variation.name,
@@ -201,6 +226,9 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
     appendOption({ 
       title: '',
       required: false,
+      allowMultiple: false,
+      minSelections: undefined,
+      maxSelections: undefined,
       variations: [{ name: '', price: 0 }]
     });
   };
@@ -244,7 +272,8 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
             popular: formData.popular,
             vegetarian: formData.vegetarian
           })
-          .eq('id', product.id);
+          .eq('id', product.id)
+          .eq('tenant_id', tenantId!);
           
         if (error) throw error;
       } else {
@@ -258,7 +287,8 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
             category_id: formData.category_id,
             image_url: formData.image_url,
             popular: formData.popular,
-            vegetarian: formData.vegetarian
+            vegetarian: formData.vegetarian,
+            tenant_id: tenantId,
           })
           .select();
           
@@ -294,13 +324,16 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
         
         // Process each option
         for (const option of formData.product_options) {
-          if (option.id) {
+            if (option.id) {
             // Update existing option
             const { error } = await supabase
               .from('product_options')
               .update({
                 title: option.title,
-                required: option.required
+                required: option.required,
+                allow_multiple: option.allowMultiple ?? false,
+                min_selections: option.minSelections ?? null,
+                max_selections: option.maxSelections ?? null,
               })
               .eq('id', option.id);
               
@@ -359,7 +392,10 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
               .insert({
                 product_id: productId,
                 title: option.title,
-                required: option.required
+                required: option.required,
+                allow_multiple: option.allowMultiple ?? false,
+                min_selections: option.minSelections ?? null,
+                max_selections: option.maxSelections ?? null,
               })
               .select();
               
@@ -398,13 +434,13 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
     <Card className="w-full">
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle>{product ? 'Editar Produto' : 'Adicionar Novo Produto'}</CardTitle>
+          <CardTitle>{product ? t('admin.products_page.edit' ) || 'Editar Produto' : t('admin.products_page.addProduct') || 'Adicionar Novo Produto'}</CardTitle>
           <Button variant="ghost" size="icon" onClick={() => { try { localStorage.removeItem(draftKey); } catch {}; onCancel(); }} aria-label="Fechar formulário">
             <X className="h-5 w-5" />
           </Button>
         </div>
         <CardDescription>
-          {product ? 'Modifique os detalhes do produto abaixo.' : 'Preencha os detalhes do novo produto.'}
+          {product ? t('admin.products_page.editDescription') || 'Modifique os detalhes do produto abaixo.' : t('admin.products_page.addDescription') || 'Preencha os detalhes do novo produto.'}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -415,7 +451,7 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome do Produto</FormLabel>
+                  <FormLabel>{t('admin.products_page.name') || 'Nome do Produto'}</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Esfiha de Carne" {...field} />
                   </FormControl>
@@ -540,7 +576,7 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
             
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium">Opções de Produto (Variantes)</h3>
+                <h3 className="text-lg font-medium">{t('admin.products_page.productOptions') || 'Opções de Produto (Variantes)'}</h3>
                 <Button 
                   type="button" 
                   variant="outline" 
@@ -548,14 +584,14 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
                   onClick={addOption}
                   className="flex items-center gap-1"
                 >
-                  <Plus className="h-4 w-4" /> Adicionar Opção
+                  <Plus className="h-4 w-4" /> {t('admin.products_page.addOption') || 'Adicionar Opção'}
                 </Button>
               </div>
               
               {optionsFields.map((optionField, optionIndex) => (
                 <div key={optionField.id} className="border rounded-md p-4 space-y-4">
                   <div className="flex justify-between items-start">
-                    <h4 className="font-medium">Opção {optionIndex + 1}</h4>
+                    <h4 className="font-medium">{t('admin.products_page.optionName') || `Opção ${optionIndex + 1}`}</h4>
                     <Button
                       type="button"
                       variant="ghost"
@@ -573,7 +609,7 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
                       name={`product_options.${optionIndex}.title`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Título</FormLabel>
+                          <FormLabel>{t('admin.products_page.optionName') || 'Título'}</FormLabel>
                           <FormControl>
                             <Input placeholder="Ex: Sabores" {...field} />
                           </FormControl>
@@ -594,19 +630,69 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
                             />
                           </FormControl>
                           <div className="space-y-1 leading-none">
-                            <FormLabel>Obrigatório?</FormLabel>
+                            <FormLabel>{t('menu.required') || 'Obrigatório?'}</FormLabel>
                             <FormDescription>
-                              O cliente deve escolher pelo menos uma opção
+                              {t('admin.products_page.requiredDescription') || 'O cliente deve escolher pelo menos uma opção'}
                             </FormDescription>
                           </div>
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name={`product_options.${optionIndex}.allowMultiple`}
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel>{t('admin.products_page.allowMultipleLabel') || 'Permitir múltiplas seleções?'}</FormLabel>
+                            <FormDescription>
+                              {t('admin.products_page.allowMultipleDescription') || 'Permite selecionar mais de uma variante nesta opção'}
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="flex gap-4">
+                      <FormField
+                        control={form.control}
+                        name={`product_options.${optionIndex}.minSelections`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Mínimo</FormLabel>
+                            <FormControl>
+                              <Input type="number" min={0} {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`product_options.${optionIndex}.maxSelections`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Máximo</FormLabel>
+                            <FormControl>
+                              <Input type="number" min={0} {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                   
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <h5 className="text-sm font-medium">Variantes</h5>
+                      <h5 className="text-sm font-medium">{t('admin.products_page.variations') || 'Variantes'}</h5>
                       <Button
                         type="button"
                         variant="ghost"
@@ -614,7 +700,7 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
                         onClick={() => addVariation(optionIndex)}
                         className="h-7 px-2 text-xs"
                       >
-                        <Plus className="h-3 w-3 mr-1" /> Adicionar Variante
+                        <Plus className="h-3 w-3 mr-1" /> {t('admin.products_page.addVariation') || 'Adicionar Variante'}
                       </Button>
                     </div>
                     
@@ -625,7 +711,7 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
                           name={`product_options.${optionIndex}.variations.${variationIndex}.name`}
                           render={({ field }) => (
                             <FormItem className="flex-1">
-                              <FormLabel className="text-xs">Nome</FormLabel>
+                              <FormLabel className="text-xs">{t('common.name') || 'Nome'}</FormLabel>
                               <FormControl>
                                 <Input placeholder="Ex: Calabresa" {...field} />
                               </FormControl>
@@ -639,7 +725,7 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
                           name={`product_options.${optionIndex}.variations.${variationIndex}.price`}
                           render={({ field }) => (
                             <FormItem className="w-24">
-                              <FormLabel className="text-xs">Preço Adicional</FormLabel>
+                              <FormLabel className="text-xs">{t('common.price') || 'Preço Adicional'}</FormLabel>
                               <FormControl>
                                 <Input 
                                   type="number" 
@@ -675,6 +761,26 @@ const SupabaseProductForm: React.FC<SupabaseProductFormProps> = ({ product, onSu
                 </div>
               )}
             </div>
+
+            {/* Variation Groups Section */}
+            {product?.id && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Grupos de Variações Reutilizáveis</CardTitle>
+                  <CardDescription>
+                    Atribua grupos de variações pré-criados a este produto
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ProductVariationGroups
+                    productId={product.id}
+                    onGroupsChange={(groups) => {
+                      // Groups are managed directly in Supabase, no need to update form
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            )}
             
             <div className="flex justify-end gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
