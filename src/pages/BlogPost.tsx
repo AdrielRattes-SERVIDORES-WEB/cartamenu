@@ -90,7 +90,7 @@ export default function BlogPost() {
           author: post.author,
           tags: [post.tag, post.city],
         }}
-        jsonLd={[articleSchema, breadcrumbSchema]}
+        jsonLd={post.faq ? [articleSchema, breadcrumbSchema, post.faq] : [articleSchema, breadcrumbSchema]}
       />
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
