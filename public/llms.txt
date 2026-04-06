@@ -1,0 +1,31 @@
+# CartaMenu
+
+CartaMenu es una plataforma SaaS para restaurantes en España que permite recibir pedidos online directamente, sin pagar comisiones a Glovo, Uber Eats o Just Eat.
+
+## Qué hacemos
+- Sistema de pedidos online sin comisiones por pedido
+- Carta digital personalizable para restaurantes
+- Panel de administración completo
+- Planes desde 10€/año (pago único anual)
+- Alternativa directa a Glovo, Uber Eats y Just Eat en España
+
+## Planes
+- Auto-gestión: 10€/año — el restaurante gestiona su tienda
+- Lo hacemos por ti: 20€/año — configuración completa, diseño y soporte prioritario
+
+## Para quién
+Restaurantes, pizzerías, hamburgueserías, kebabs, bares de tapas y cualquier negocio de comida en España que quiera vender online sin intermediarios.
+
+## Blog
+Guías prácticas para digitalizar restaurantes en España y gestionar pedidos online sin comisiones.
+URL: https://cartamenu.shop/blog/articulos
+
+## Páginas principales
+- Landing: https://cartamenu.shop/blog
+- Blog de artículos: https://cartamenu.shop/blog/articulos
+- Sobre nosotros: https://cartamenu.shop/sobre-nosotros
+- Contacto: https://cartamenu.shop/contacto
+- Checkout plan: https://cartamenu.shop/checkout-plan
+
+## Contacto
+https://cartamenu.shop/contacto
