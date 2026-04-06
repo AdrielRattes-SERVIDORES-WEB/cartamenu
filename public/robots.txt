@@ -9,4 +9,4 @@ Disallow: /checkout-plan
 Disallow: /customer
 
 # Sitemap
-Sitemap: https://cartamenu.es/sitemap.xml
+Sitemap: https://cartamenu.shop/sitemap.xml

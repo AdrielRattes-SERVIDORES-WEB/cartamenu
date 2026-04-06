@@ -68,7 +68,7 @@ export default function CookiesPolicy() {
           <p>Ten en cuenta que desactivar cookies técnicas puede impedir el correcto funcionamiento del servicio.</p>
 
           <h2>4. Más información</h2>
-          <p>Para cualquier consulta sobre cookies escríbenos a <a href="mailto:privacidad@cartamenu.es" className="text-[#FF3008]">privacidad@cartamenu.es</a> o consulta nuestra <Link to="/privacidad" className="text-[#FF3008]">Política de Privacidad</Link>.</p>
+          <p>Para cualquier consulta sobre cookies escríbenos a <a href="mailto:privacidad@cartamenu.shop" className="text-[#FF3008]">privacidad@cartamenu.shop</a> o consulta nuestra <Link to="/privacidad" className="text-[#FF3008]">Política de Privacidad</Link>.</p>
         </div>
       </main>
 

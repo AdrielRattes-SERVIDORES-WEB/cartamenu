@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-const SITE_URL = 'https://cartamenu.es';
+const SITE_URL = 'https://cartamenu.shop';
 const SITE_NAME = 'CartaMenu';
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.jpg`;
 

@@ -80,7 +80,7 @@ export default function TermsOfService() {
           <p>Estos términos se rigen por la legislación española. Para cualquier disputa, las partes se someten a los juzgados de Madrid, salvo que la normativa de consumidores establezca otro fuero.</p>
 
           <h2>11. Contacto</h2>
-          <p>Para cualquier consulta sobre estos términos: <a href="mailto:legal@cartamenu.es" className="text-[#FF3008]">legal@cartamenu.es</a></p>
+          <p>Para cualquier consulta sobre estos términos: <a href="mailto:legal@cartamenu.shop" className="text-[#FF3008]">legal@cartamenu.shop</a></p>
         </div>
       </main>
 

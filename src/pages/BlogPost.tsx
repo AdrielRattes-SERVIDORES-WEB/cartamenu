@@ -18,7 +18,7 @@ export default function BlogPost() {
     "@type": "BlogPosting",
     "headline": post.title,
     "description": post.excerpt,
-    "image": `https://cartamenu.es${post.image}`,
+    "image": `https://cartamenu.shop${post.image}`,
     "datePublished": post.date,
     "dateModified": post.date,
     "author": {
@@ -28,20 +28,20 @@ export default function BlogPost() {
       "worksFor": {
         "@type": "Organization",
         "name": "CartaMenu",
-        "url": "https://cartamenu.es"
+        "url": "https://cartamenu.shop"
       }
     },
     "publisher": {
       "@type": "Organization",
       "name": "CartaMenu",
-      "url": "https://cartamenu.es",
+      "url": "https://cartamenu.shop",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://cartamenu.es/favicon.ico"
+        "url": "https://cartamenu.shop/favicon.ico"
       }
     },
-    "url": `https://cartamenu.es/blog/${post.slug}`,
-    "mainEntityOfPage": `https://cartamenu.es/blog/${post.slug}`,
+    "url": `https://cartamenu.shop/blog/${post.slug}`,
+    "mainEntityOfPage": `https://cartamenu.shop/blog/${post.slug}`,
     "keywords": [post.tag, post.city, "pedidos online restaurante", "delivery España", "CartaMenu"].join(", "),
     "articleSection": post.tag,
     "inLanguage": "es-ES",
@@ -60,19 +60,19 @@ export default function BlogPost() {
         "@type": "ListItem",
         "position": 1,
         "name": "CartaMenu",
-        "item": "https://cartamenu.es"
+        "item": "https://cartamenu.shop"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Blog",
-        "item": "https://cartamenu.es/blog/articulos"
+        "item": "https://cartamenu.shop/blog/articulos"
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": post.title,
-        "item": `https://cartamenu.es/blog/${post.slug}`
+        "item": `https://cartamenu.shop/blog/${post.slug}`
       }
     ]
   };
@@ -83,7 +83,7 @@ export default function BlogPost() {
         title={post.title}
         description={post.excerpt}
         canonical={`/blog/${post.slug}`}
-        image={`https://cartamenu.es${post.image}`}
+        image={`https://cartamenu.shop${post.image}`}
         type="article"
         article={{
           publishedTime: post.date,

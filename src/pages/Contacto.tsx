@@ -54,7 +54,7 @@ export default function Contacto() {
                 </div>
                 <div>
                   <p className="font-black text-gray-900 mb-1">Email</p>
-                  <a href="mailto:hola@cartamenu.es" className="text-sm text-[#FF3008] hover:underline">hola@cartamenu.es</a>
+                  <a href="mailto:hola@cartamenu.shop" className="text-sm text-[#FF3008] hover:underline">hola@cartamenu.shop</a>
                 </div>
               </div>
 
@@ -81,8 +81,8 @@ export default function Contacto() {
               <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
                 <p className="font-black text-gray-900 mb-2 text-sm">¿Quieres unirte al equipo?</p>
                 <p className="text-xs text-gray-500 mb-3 leading-relaxed">Siempre buscamos personas apasionadas por los restaurantes y la tecnología.</p>
-                <a href="mailto:jobs@cartamenu.es" className="text-xs font-bold text-[#FF3008] flex items-center gap-1 hover:gap-2 transition-all">
-                  jobs@cartamenu.es <ArrowRight className="w-3.5 h-3.5" />
+                <a href="mailto:jobs@cartamenu.shop" className="text-xs font-bold text-[#FF3008] flex items-center gap-1 hover:gap-2 transition-all">
+                  jobs@cartamenu.shop <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>
