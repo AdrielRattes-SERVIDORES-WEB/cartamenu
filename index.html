@@ -50,7 +50,9 @@
       "url": "https://cartamenu.shop",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://cartamenu.shop/favicon.ico"
+        "url": "https://cartamenu.shop/og-image.jpg",
+        "width": 1200,
+        "height": 630
       },
       "description": "CartaMenu es la plataforma SaaS de pedidos online y delivery para restaurantes en España. Permite a restaurantes recibir pedidos directamente sin comisiones por pedido, siendo una alternativa a Glovo, Uber Eats y Just Eat.",
       "foundingLocation": {
@@ -101,6 +103,8 @@
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
+      "@id": "https://cartamenu.shop/#software",
+      "url": "https://cartamenu.shop",
       "name": "CartaMenu",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
@@ -110,7 +114,12 @@
           "name": "Plan Auto-gestión",
           "price": "10",
           "priceCurrency": "EUR",
-          "billingIncrement": "P1Y",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": 10,
+            "priceCurrency": "EUR",
+            "billingDuration": "P1Y"
+          },
           "description": "Tienda online propia, pedidos ilimitados sin comisión, panel de administración, menú digital personalizable"
         },
         {
@@ -118,14 +127,19 @@
           "name": "Plan Lo hacemos por ti",
           "price": "20",
           "priceCurrency": "EUR",
-          "billingIncrement": "P1Y",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": 20,
+            "priceCurrency": "EUR",
+            "billingDuration": "P1Y"
+          },
           "description": "Configuración completa, diseño personalizado, dominio propio, soporte prioritario 24/7"
         }
       ],
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.9",
-        "reviewCount": "200"
+        "reviewCount": 200
       },
       "provider": {
         "@id": "https://cartamenu.shop/#organization"

@@ -51,7 +51,13 @@ export default function SEOHead({
       <title>{fullTitle}</title>
       <meta name="description" content={metaDesc} />
       <link rel="canonical" href={url} />
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
+      {noindex
+        ? <meta name="robots" content="noindex, nofollow" />
+        : <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+      }
+      <link rel="alternate" hreflang="es-ES" href={url} />
+      <link rel="alternate" hreflang="es" href={url} />
+      <link rel="alternate" hreflang="x-default" href={url} />
 
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />

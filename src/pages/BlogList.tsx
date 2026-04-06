@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Clock, Search } from 'lucide-react';
 import { BLOG_POSTS, getFeaturedPost } from '@/data/blogPosts';
 import SEOHead from '@/components/SEOHead';
@@ -8,8 +8,9 @@ import BlogFooter from '@/components/BlogFooter';
 const ALL_TAGS = ['Todos', ...Array.from(new Set(BLOG_POSTS.map((p) => p.tag)))];
 
 export default function BlogList() {
+  const [searchParams] = useSearchParams();
   const [activeTag, setActiveTag] = useState('Todos');
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(searchParams.get('q') || '');
   const featured = getFeaturedPost();
 
   const filtered = BLOG_POSTS.filter((p) => {
