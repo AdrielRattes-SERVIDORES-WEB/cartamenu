@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import { ArrowLeft, Clock, ArrowRight, Calendar } from 'lucide-react';
 import { getPostBySlug, BLOG_POSTS } from '@/data/blogPosts';
@@ -9,9 +9,18 @@ export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
   const post = getPostBySlug(slug || '');
 
+  // Scroll to top on every slug change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [slug]);
+
   if (!post) return <Navigate to="/blog/articulos" replace />;
 
-  const related = BLOG_POSTS.filter((p) => p.slug !== post.slug).slice(0, 3);
+  // Show same-tag articles first, then fill with others
+  const related = [
+    ...BLOG_POSTS.filter((p) => p.slug !== post.slug && p.tag === post.tag),
+    ...BLOG_POSTS.filter((p) => p.slug !== post.slug && p.tag !== post.tag),
+  ].slice(0, 3);
 
   const articleSchema = {
     "@context": "https://schema.org",
