@@ -459,21 +459,6 @@ function DemoStores() {
                   </span>
                 </div>
 
-                {/* Logo bottom-left, overlapping */}
-                <div className="absolute -bottom-8 left-5">
-                  <div
-                    className="w-16 h-16 rounded-2xl overflow-hidden border-2 shadow-xl"
-                    style={{ borderColor: 'rgba(255,255,255,0.15)', background: '#161926', boxShadow: `0 8px 24px ${store.accent}33` }}
-                  >
-                    <img
-                      src={store.logo}
-                      alt={`Logo ${store.name}`}
-                      className="w-full h-full object-cover"
-                      onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                    />
-                  </div>
-                </div>
-
                 {/* "Ver tienda" hover pill */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div
@@ -488,8 +473,23 @@ function DemoStores() {
                 </div>
               </div>
 
-              {/* Body — with top padding for logo overlap */}
-              <div className="pt-12 px-5 pb-6 flex flex-col flex-1">
+              {/* Logo — outside banner so overflow-hidden doesn't clip it */}
+              <div className="px-5 -mt-8 relative z-10">
+                <div
+                  className="w-16 h-16 rounded-2xl overflow-hidden border-2 shadow-xl"
+                  style={{ borderColor: 'rgba(255,255,255,0.15)', background: '#161926', boxShadow: `0 8px 24px ${store.accent}33` }}
+                >
+                  <img
+                    src={store.logo}
+                    alt={`Logo ${store.name}`}
+                    className="w-full h-full object-cover"
+                    onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="pt-3 px-5 pb-6 flex flex-col flex-1">
                 <h3
                   className="text-white text-xl font-bold mb-2 leading-tight group-hover:text-white transition-colors"
                   style={fraunces}
