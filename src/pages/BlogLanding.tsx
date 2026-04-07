@@ -152,36 +152,39 @@ const TYPING_PHRASES = [
   "Desde 10€/año. Sin sorpresas.",
 ];
 
-function useTypingEffect(phrases: string[], speed = 60, pause = 1800) {
-  const [displayed, setDisplayed] = React.useState("");
+function useStackingTypewriter(phrases: string[], speed = 55, pauseBetween = 600) {
+  const [lines, setLines] = React.useState<string[]>([]);
+  const [currentLine, setCurrentLine] = React.useState("");
   const [phraseIdx, setPhraseIdx] = React.useState(0);
   const [charIdx, setCharIdx] = React.useState(0);
-  const [deleting, setDeleting] = React.useState(false);
+  const done = phraseIdx >= phrases.length && charIdx >= phrases[phrases.length - 1]?.length;
 
   React.useEffect(() => {
+    if (phraseIdx >= phrases.length) return;
     const current = phrases[phraseIdx];
-    let timeout: ReturnType<typeof setTimeout>;
 
-    if (!deleting && charIdx < current.length) {
-      timeout = setTimeout(() => setCharIdx(c => c + 1), speed);
-    } else if (!deleting && charIdx === current.length) {
-      timeout = setTimeout(() => setDeleting(true), pause);
-    } else if (deleting && charIdx > 0) {
-      timeout = setTimeout(() => setCharIdx(c => c - 1), speed / 2);
-    } else if (deleting && charIdx === 0) {
-      setDeleting(false);
-      setPhraseIdx(i => (i + 1) % phrases.length);
+    if (charIdx < current.length) {
+      const t = setTimeout(() => {
+        setCharIdx(c => c + 1);
+        setCurrentLine(current.slice(0, charIdx + 1));
+      }, speed);
+      return () => clearTimeout(t);
+    } else {
+      const t = setTimeout(() => {
+        setLines(l => [...l, current]);
+        setCurrentLine("");
+        setCharIdx(0);
+        setPhraseIdx(i => i + 1);
+      }, pauseBetween);
+      return () => clearTimeout(t);
     }
+  }, [charIdx, phraseIdx, phrases, speed, pauseBetween]);
 
-    setDisplayed(current.slice(0, charIdx));
-    return () => clearTimeout(timeout);
-  }, [charIdx, deleting, phraseIdx, phrases, speed, pause]);
-
-  return displayed;
+  return { lines, currentLine, done };
 }
 
 function Hero() {
-  const typedText = useTypingEffect(TYPING_PHRASES);
+  const { lines, currentLine, done } = useStackingTypewriter(TYPING_PHRASES);
 
   return (
     <section className="pt-16 bg-[#0E1119] min-h-[80vh] flex items-center relative overflow-hidden">
@@ -212,12 +215,19 @@ function Hero() {
             <span className="text-[#FF3008]">Sin comisiones.</span>
           </h1>
 
-          {/* Typing animation */}
-          <div className="mb-10 max-w-lg min-h-[3.5rem] flex items-center" style={jakartaSans}>
-            <p className="text-lg sm:text-xl text-white/60 leading-relaxed">
-              {typedText}
-              <span className="inline-block w-[2px] h-[1.1em] bg-[#FF3008] ml-0.5 align-middle animate-pulse" />
-            </p>
+          {/* Stacking typewriter */}
+          <div className="mb-10 max-w-lg space-y-1" style={jakartaSans}>
+            {lines.map((line, i) => (
+              <p key={i} className="text-lg sm:text-xl text-white/50 leading-relaxed">
+                {line}
+              </p>
+            ))}
+            {!done && (
+              <p className="text-lg sm:text-xl text-white/80 leading-relaxed">
+                {currentLine}
+                <span className="inline-block w-[2px] h-[1.1em] bg-[#FF3008] ml-0.5 align-middle animate-pulse" />
+              </p>
+            )}
           </div>
 
           {/* CTA */}
