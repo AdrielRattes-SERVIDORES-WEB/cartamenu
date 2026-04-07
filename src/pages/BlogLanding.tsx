@@ -144,8 +144,44 @@ function Navbar() {
   );
 }
 
+const TYPING_PHRASES = [
+  "Más pedidos. Sin comisiones.",
+  "La plataforma que te libera de Glovo.",
+  "Tu restaurante. Tu canal. Tus clientes.",
+  "Sin Uber Eats. Sin Just Eat. Sin ataduras.",
+  "Desde 10€/año. Sin sorpresas.",
+];
+
+function useTypingEffect(phrases: string[], speed = 60, pause = 1800) {
+  const [displayed, setDisplayed] = React.useState("");
+  const [phraseIdx, setPhraseIdx] = React.useState(0);
+  const [charIdx, setCharIdx] = React.useState(0);
+  const [deleting, setDeleting] = React.useState(false);
+
+  React.useEffect(() => {
+    const current = phrases[phraseIdx];
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (!deleting && charIdx < current.length) {
+      timeout = setTimeout(() => setCharIdx(c => c + 1), speed);
+    } else if (!deleting && charIdx === current.length) {
+      timeout = setTimeout(() => setDeleting(true), pause);
+    } else if (deleting && charIdx > 0) {
+      timeout = setTimeout(() => setCharIdx(c => c - 1), speed / 2);
+    } else if (deleting && charIdx === 0) {
+      setDeleting(false);
+      setPhraseIdx(i => (i + 1) % phrases.length);
+    }
+
+    setDisplayed(current.slice(0, charIdx));
+    return () => clearTimeout(timeout);
+  }, [charIdx, deleting, phraseIdx, phrases, speed, pause]);
+
+  return displayed;
+}
+
 function Hero() {
-  const [email, setEmail] = useState("");
+  const typedText = useTypingEffect(TYPING_PHRASES);
 
   return (
     <section className="pt-16 bg-[#0E1119] min-h-[96vh] flex items-center relative overflow-hidden">
@@ -176,32 +212,23 @@ function Hero() {
             <span className="text-[#FF3008]">Sin comisiones.</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-white/50 mb-10 max-w-lg leading-relaxed" style={jakartaSans}>
-            La plataforma que permite a tu restaurante recibir pedidos online directamente — sin pagar el 30% a Glovo o Uber Eats.
-          </p>
+          {/* Typing animation */}
+          <div className="mb-10 max-w-lg min-h-[3.5rem] flex items-center" style={jakartaSans}>
+            <p className="text-lg sm:text-xl text-white/60 leading-relaxed">
+              {typedText}
+              <span className="inline-block w-[2px] h-[1.1em] bg-[#FF3008] ml-0.5 align-middle animate-pulse" />
+            </p>
+          </div>
 
-          {/* Email CTA */}
-          <form
-            className="flex flex-col sm:flex-row gap-3 max-w-md"
-            onSubmit={(e) => e.preventDefault()}
+          {/* CTA */}
+          <Link
+            to="/checkout-plan?plan=auto"
+            className="inline-flex items-center gap-2 bg-[#FF3008] hover:bg-[#d42a07] text-white font-bold px-8 py-4 rounded-full transition-all hover:shadow-xl hover:shadow-[#FF3008]/30 text-sm"
+            style={jakartaSans}
           >
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@restaurante.es"
-              className="flex-1 bg-white/8 border border-white/15 text-white placeholder-white/30 rounded-full px-5 py-3.5 text-sm focus:outline-none focus:border-[#FF3008]/60 focus:bg-white/12 transition-all"
-              style={jakartaSans}
-            />
-            <button
-              type="submit"
-              className="bg-[#FF3008] hover:bg-[#d42a07] text-white font-bold px-7 py-3.5 rounded-full transition-all hover:shadow-xl hover:shadow-[#FF3008]/30 whitespace-nowrap text-sm flex items-center gap-1.5"
-              style={jakartaSans}
-            >
-              Empezar por 10€/año
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
+            Empezar por 10€/año
+            <ArrowRight className="w-4 h-4" />
+          </Link>
 
           <p className="text-xs text-white/30 mt-3" style={jakartaSans}>Pago único anual · Sin comisiones por pedido · Soporte en español</p>
 
