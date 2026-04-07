@@ -184,7 +184,7 @@ function Hero() {
   const typedText = useTypingEffect(TYPING_PHRASES);
 
   return (
-    <section className="pt-16 bg-[#0E1119] min-h-[96vh] flex items-center relative overflow-hidden">
+    <section className="pt-16 bg-[#0E1119] min-h-[80vh] flex items-center relative overflow-hidden">
       {/* Grid texture */}
       <div className="absolute inset-0 opacity-[0.04]"
         style={{
@@ -196,7 +196,7 @@ function Hero() {
       <div className="absolute top-1/4 right-0 w-[700px] h-[700px] bg-[#FF3008]/8 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-amber-500/5 rounded-full blur-[80px] pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-24 grid lg:grid-cols-[1fr_auto] gap-16 items-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-14 grid lg:grid-cols-[1fr_auto] gap-16 items-center">
         {/* Left */}
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-2 bg-white/8 text-white/70 text-xs font-semibold px-3 py-1.5 rounded-full mb-10 border border-white/10" style={jakartaSans}>
