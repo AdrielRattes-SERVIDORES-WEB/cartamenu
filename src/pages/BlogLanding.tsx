@@ -152,15 +152,31 @@ const TYPING_PHRASES = [
   "Desde 10€/año. Sin sorpresas.",
 ];
 
-function useStackingTypewriter(phrases: string[], speed = 55, pauseBetween = 600) {
+function useStackingTypewriter(phrases: string[], speed = 55, pauseBetween = 700, resetPause = 2000) {
   const [lines, setLines] = React.useState<string[]>([]);
   const [currentLine, setCurrentLine] = React.useState("");
   const [phraseIdx, setPhraseIdx] = React.useState(0);
   const [charIdx, setCharIdx] = React.useState(0);
-  const done = phraseIdx >= phrases.length && charIdx >= phrases[phrases.length - 1]?.length;
+  const [resetting, setResetting] = React.useState(false);
 
   React.useEffect(() => {
-    if (phraseIdx >= phrases.length) return;
+    // After all phrases typed, pause then reset
+    if (resetting) {
+      const t = setTimeout(() => {
+        setLines([]);
+        setCurrentLine("");
+        setCharIdx(0);
+        setPhraseIdx(0);
+        setResetting(false);
+      }, resetPause);
+      return () => clearTimeout(t);
+    }
+
+    if (phraseIdx >= phrases.length) {
+      setResetting(true);
+      return;
+    }
+
     const current = phrases[phraseIdx];
 
     if (charIdx < current.length) {
@@ -178,13 +194,13 @@ function useStackingTypewriter(phrases: string[], speed = 55, pauseBetween = 600
       }, pauseBetween);
       return () => clearTimeout(t);
     }
-  }, [charIdx, phraseIdx, phrases, speed, pauseBetween]);
+  }, [charIdx, phraseIdx, phrases, speed, pauseBetween, resetPause, resetting]);
 
-  return { lines, currentLine, done };
+  return { lines, currentLine };
 }
 
 function Hero() {
-  const { lines, currentLine, done } = useStackingTypewriter(TYPING_PHRASES);
+  const { lines, currentLine } = useStackingTypewriter(TYPING_PHRASES);
 
   return (
     <section className="pt-16 bg-[#0E1119] min-h-[80vh] flex items-center relative overflow-hidden">
@@ -215,17 +231,20 @@ function Hero() {
             <span className="text-[#FF3008]">Sin comisiones.</span>
           </h1>
 
-          {/* Stacking typewriter */}
-          <div className="mb-10 max-w-lg space-y-1" style={jakartaSans}>
+          {/* Stacking typewriter — fixed height so button never moves */}
+          <div
+            className="mb-10 max-w-lg space-y-1.5 overflow-hidden"
+            style={{ ...jakartaSans, minHeight: `${TYPING_PHRASES.length * 2.2}rem` }}
+          >
             {lines.map((line, i) => (
-              <p key={i} className="text-lg sm:text-xl text-white/50 leading-relaxed">
+              <p key={i} className="text-base sm:text-lg text-white leading-relaxed">
                 {line}
               </p>
             ))}
-            {!done && (
-              <p className="text-lg sm:text-xl text-white/80 leading-relaxed">
+            {currentLine && (
+              <p className="text-base sm:text-lg text-white leading-relaxed">
                 {currentLine}
-                <span className="inline-block w-[2px] h-[1.1em] bg-[#FF3008] ml-0.5 align-middle animate-pulse" />
+                <span className="inline-block w-[2px] h-[1em] bg-[#FF3008] ml-0.5 align-middle animate-pulse" />
               </p>
             )}
           </div>
