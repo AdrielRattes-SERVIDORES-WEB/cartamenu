@@ -152,28 +152,17 @@ const TYPING_PHRASES = [
   "Desde 10€/año. Sin sorpresas.",
 ];
 
-function useStackingTypewriter(phrases: string[], speed = 55, pauseBetween = 700, resetPause = 2000) {
+function useStackingTypewriter(phrases: string[], speed = 55, pauseBetween = 700) {
   const [lines, setLines] = React.useState<string[]>([]);
   const [currentLine, setCurrentLine] = React.useState("");
   const [phraseIdx, setPhraseIdx] = React.useState(0);
   const [charIdx, setCharIdx] = React.useState(0);
-  const [resetting, setResetting] = React.useState(false);
+  const [done, setDone] = React.useState(false);
 
   React.useEffect(() => {
-    // After all phrases typed, pause then reset
-    if (resetting) {
-      const t = setTimeout(() => {
-        setLines([]);
-        setCurrentLine("");
-        setCharIdx(0);
-        setPhraseIdx(0);
-        setResetting(false);
-      }, resetPause);
-      return () => clearTimeout(t);
-    }
-
+    if (done) return;
     if (phraseIdx >= phrases.length) {
-      setResetting(true);
+      setDone(true);
       return;
     }
 
@@ -194,7 +183,7 @@ function useStackingTypewriter(phrases: string[], speed = 55, pauseBetween = 700
       }, pauseBetween);
       return () => clearTimeout(t);
     }
-  }, [charIdx, phraseIdx, phrases, speed, pauseBetween, resetPause, resetting]);
+  }, [charIdx, phraseIdx, phrases, speed, pauseBetween, done]);
 
   return { lines, currentLine };
 }
@@ -259,7 +248,7 @@ function Hero() {
             <ArrowRight className="w-4 h-4" />
           </Link>
 
-          <p className="text-xs text-white/30 mt-3" style={jakartaSans}>Pago único anual · Sin comisiones por pedido · Soporte en español</p>
+          <p className="text-xs text-white/70 mt-3" style={jakartaSans}>Pago único anual · Sin comisiones por pedido · Soporte en español</p>
 
           {/* Social proof */}
           <div className="mt-10 flex items-center gap-3">
@@ -278,8 +267,8 @@ function Hero() {
                   </svg>
                 ))}
               </div>
-              <p className="text-xs text-white/40 mt-0.5" style={jakartaSans}>
-                <strong className="text-white/80">+200 restaurantes</strong> ya confían en nosotros
+              <p className="text-xs text-white mt-0.5" style={jakartaSans}>
+                <strong className="text-white">+200 restaurantes</strong> ya confían en nosotros
               </p>
             </div>
           </div>
@@ -467,7 +456,7 @@ function DemoStores() {
               <span className="text-[#FF3008]">con CartaMenu</span>
             </h2>
           </div>
-          <p className="text-white/40 text-base max-w-xs leading-relaxed md:text-right" style={jakartaSans}>
+          <p className="text-white text-base max-w-xs leading-relaxed md:text-right" style={jakartaSans}>
             Haz clic en cualquier tienda para verla en vivo tal como la ven tus clientes.
           </p>
         </div>
@@ -552,7 +541,7 @@ function DemoStores() {
                 >
                   {store.name}
                 </h3>
-                <p className="text-white/40 text-sm leading-relaxed flex-1" style={jakartaSans}>
+                <p className="text-white/80 text-sm leading-relaxed flex-1" style={jakartaSans}>
                   {store.desc}
                 </p>
 
@@ -560,7 +549,7 @@ function DemoStores() {
                 <div className="mt-5 pt-4 border-t border-white/6 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-xs text-white/30 font-medium" style={jakartaSans}>Tienda activa</span>
+                    <span className="text-xs text-white/70 font-medium" style={jakartaSans}>Tienda activa</span>
                   </div>
                   <span
                     className="text-xs font-bold flex items-center gap-1 transition-all"
@@ -578,7 +567,7 @@ function DemoStores() {
         </div>
 
         {/* Bottom note */}
-        <p className="text-center text-white/20 text-sm mt-10" style={jakartaSans}>
+        <p className="text-center text-white/60 text-sm mt-10" style={jakartaSans}>
           Estas son tiendas de demostración reales · Tu tienda se verá exactamente igual
         </p>
       </div>
@@ -772,7 +761,7 @@ function CtaBanner() {
           ¿Listo para dejar de pagar<br className="hidden sm:block" />{" "}
           <span className="text-[#FF3008]">el 30% a las plataformas?</span>
         </h2>
-        <p className="text-white/50 text-lg mb-12 max-w-xl mx-auto leading-relaxed" style={jakartaSans}>
+        <p className="text-white text-lg mb-12 max-w-xl mx-auto leading-relaxed" style={jakartaSans}>
           Únete a cientos de restaurantes en España que ya venden directo. Sin Glovo. Sin Uber Eats. Sin comisiones.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -791,7 +780,7 @@ function CtaBanner() {
             Cómo funciona
           </a>
         </div>
-        <p className="text-white/30 text-xs mt-8" style={jakartaSans}>Pago único anual · Sin comisiones por pedido · Soporte en español</p>
+        <p className="text-white/70 text-xs mt-8" style={jakartaSans}>Pago único anual · Sin comisiones por pedido · Soporte en español</p>
       </div>
     </section>
   );
