@@ -70,7 +70,7 @@ export default function BlogFooter() {
 
         <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-xs text-white/25" style={jakartaSans}>
-            © 2025 CartaMenu. Todos los derechos reservados.
+            © 2026 CartaMenu. Todos los derechos reservados.
           </p>
           <div className="flex gap-4">
             <Link to="/privacidad" className="text-xs text-white/25 hover:text-white/60 transition-colors" style={jakartaSans}>Privacidad</Link>
