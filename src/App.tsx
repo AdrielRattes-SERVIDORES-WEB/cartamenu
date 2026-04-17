@@ -23,6 +23,7 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminVariationGroups from "./pages/admin/AdminVariationGroups";
 import AdminMenuOrdering from "./pages/admin/AdminMenuOrdering";
+import AdminQRCode from "./pages/admin/AdminQRCode";
 import Login from "./pages/Login";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminRegister from "./pages/admin/AdminRegister";
@@ -96,6 +97,7 @@ const App = () => (
                   <Route path="variation-groups" element={<AdminVariationGroups />} />
                   <Route path="menu-ordering" element={<AdminMenuOrdering />} />
                   <Route path="orders" element={<AdminOrders />} />
+                  <Route path="qrcode" element={<AdminQRCode />} />
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>
                 

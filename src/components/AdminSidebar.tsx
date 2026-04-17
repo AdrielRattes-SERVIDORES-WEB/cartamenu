@@ -4,15 +4,16 @@ import { NavLink } from 'react-router-dom';
 import { useUser } from '@/contexts/UserContext';
 import { useStore } from '@/contexts/StoreContext';
 import { useTranslation } from 'react-i18next';
-import { 
-  LayoutDashboard, 
-  Package, 
-  ListOrdered, 
-  Settings, 
-  Layers, 
+import {
+  LayoutDashboard,
+  Package,
+  ListOrdered,
+  Settings,
+  Layers,
   Zap,
   Menu,
-  LogOut 
+  LogOut,
+  QrCode
 } from 'lucide-react';
 import { LanguageSelector } from './LanguageSelector';
 
@@ -114,9 +115,9 @@ const AdminSidebar = () => {
             <span>{t('variation_group.variations')}</span>
           </NavLink>
           
-          <NavLink 
-            to="/admin/orders" 
-            className={({isActive}) => 
+          <NavLink
+            to="/admin/orders"
+            className={({isActive}) =>
               `flex items-center gap-3 p-3 rounded-md transition-all ${
                 isActive ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100'
               }`
@@ -124,6 +125,18 @@ const AdminSidebar = () => {
           >
             <ListOrdered size={18} />
             <span>{t('admin.orders')}</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/qrcode"
+            className={({isActive}) =>
+              `flex items-center gap-3 p-3 rounded-md transition-all ${
+                isActive ? 'bg-primary/10 text-primary' : 'text-gray-700 hover:bg-gray-100'
+              }`
+            }
+          >
+            <QrCode size={18} />
+            <span>Códigos QR</span>
           </NavLink>
           
           <NavLink 
