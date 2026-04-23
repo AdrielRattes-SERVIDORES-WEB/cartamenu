@@ -13,6 +13,7 @@ export type BlogPost = {
   readTime: string;
   featured?: boolean;
   faq?: object;
+  hasCalculator?: boolean;
 };
 
 export const BLOG_POSTS: BlogPost[] = [
@@ -3396,6 +3397,348 @@ export const BLOG_POSTS: BlogPost[] = [
         }
       ]
     },
+  },
+  {
+    slug: 'cuanto-pierde-restaurante-just-eat-al-ano',
+    title: 'Cuánto pierde un restaurante con Just Eat al año (con calculadora)',
+    excerpt: 'Un restaurante que factura 3.000 € al mes en Just Eat está perdiendo más de 10.000 € al año en comisiones. Te mostramos el cálculo real y cómo recuperar ese dinero.',
+    tag: 'Sin comisiones',
+    tagColor: 'bg-red-100 text-red-700',
+    city: 'España',
+    image: '/blog/pillar-just-eat-comisiones.jpg',
+    author: 'CartaMenu',
+    authorRole: 'Equipo CartaMenu',
+    date: '2026-04-23',
+    readTime: '6 min',
+    hasCalculator: true,
+    content: `
+<p><strong>Un restaurante que factura 3.000 € al mes en Just Eat pierde entre 900 € y 1.050 € en comisiones cada mes, es decir, más de 10.800 € al año.</strong> Con un ticket medio de 25 € y una comisión del 30–35 %, la plataforma se queda con casi un tercio de tu facturación antes de que puedas tocar ese dinero.</p>
+
+<h2>Cómo funcionan realmente las comisiones de Just Eat</h2>
+<p>Just Eat aplica una comisión que oscila entre el 14 % y el 35 % sobre el valor bruto de cada pedido, dependiendo del contrato, el país y si el restaurante usa la flota de reparto propia de la plataforma. En España, la comisión más habitual para restaurantes que usan el reparto de Just Eat ronda el 30–33 %.</p>
+<p>A eso hay que sumar:</p>
+<ul>
+<li><strong>Coste de activación o suscripción mensual</strong> en algunos contratos.</li>
+<li><strong>Coste de publicidad interna</strong> (los "Sponsored" para aparecer primero en los resultados).</li>
+<li><strong>Retención sobre los pagos online</strong>, que pueden tardar hasta 14 días en llegar a tu cuenta.</li>
+</ul>
+<p>El resultado real no es un 30 %. Es más cerca de un 35–40 % si sumas todas las capas de coste.</p>
+
+<h2>El cálculo que nadie te hace</h2>
+<p>Muchos restaurantes calculan las comisiones sobre el pedido individual y lo ven como "un coste asumible". El error está en no hacer el cálculo anual:</p>
+<ul>
+<li>100 pedidos/mes × 25 € ticket medio = 2.500 €/mes de facturación.</li>
+<li>Con un 30 % de comisión: pierdes <strong>750 €/mes → 9.000 €/año</strong>.</li>
+<li>Con 200 pedidos/mes a 30 €: pierdes <strong>1.800 €/mes → 21.600 €/año</strong>.</li>
+</ul>
+<p>Ese dinero no es tu beneficio neto, es dinero con el que podrías pagar el salario de un empleado, renovar equipamiento o simplemente quedarte en el bolsillo.</p>
+
+<h2>Qué pasa si dependes solo de Just Eat</h2>
+<p>La dependencia exclusiva de una plataforma de delivery tiene un segundo riesgo que va más allá del dinero: <strong>el cliente no es tuyo</strong>. Just Eat guarda los datos, el histórico de pedidos y la relación con ese usuario. Si mañana la plataforma sube sus comisiones, cambia su algoritmo o simplemente decide destacar a la competencia, tu negocio queda expuesto sin red de seguridad.</p>
+<p>Restaurantes que han pasado por cierres temporales de su perfil en Just Eat por disputas contractuales han perdido el 100 % de sus ingresos de delivery de un día para otro, porque no tenían ningún canal propio.</p>
+
+<h2>La alternativa: tu propio canal de pedidos</h2>
+<p>Con una herramienta como <a href="/">CartaMenu</a>, puedes tener tu propia carta digital con pedidos online por <strong>10 €/año</strong>, sin comisión por pedido. El primer pedido que recibes ya ha amortizado el coste anual completo de la tecnología.</p>
+<p>La estrategia más inteligente no es abandonar Just Eat de golpe, sino usarlo como escaparate para captar clientes nuevos e ir migrándolos a tu canal directo con incentivos: envío gratuito en pedidos directos, descuento exclusivo en la web, o simplemente el mismo precio sin recargo.</p>
+<p>Usa la calculadora de abajo para ver exactamente cuánto estás perdiendo con tus datos reales.</p>
+
+<p><strong>¿Listo para dejar de pagar comisiones? <a href="/checkout-plan">Empieza con CartaMenu por 10 €/año</a>.</strong></p>
+`,
+    faq: {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Cuánto cobra Just Eat de comisión en España?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Just Eat aplica comisiones de entre el 14 % y el 35 % según el contrato. Para restaurantes que usan la flota de reparto de Just Eat en España, la comisión habitual está entre el 30 % y el 33 % sobre el valor bruto del pedido."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Es legal que Just Eat cobre comisiones tan altas?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí, es legal. Son condiciones contractuales que el restaurante acepta al darse de alta. Por eso es fundamental leer el contrato completo y calcular el impacto real en tu cuenta de resultados antes de firmar."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Puedo tener mi propio sistema de pedidos y seguir en Just Eat?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí, y es la estrategia recomendada. Mantén Just Eat para visibilidad y captación de clientes nuevos, pero deriva a tus clientes habituales a tu canal propio sin comisiones mediante incentivos como descuentos o envío gratuito en pedidos directos."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cuánto cuesta tener un sistema de pedidos propio?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Con CartaMenu, el coste es de 10 € al año, sin comisiones por pedido. El primer pedido que recibes a través de tu canal propio ya ha cubierto el coste anual de la tecnología."
+      }
+    }
+  ]
+},
+  },
+  {
+    slug: 'carta-digital-para-delivery-propio',
+    title: 'Carta digital para delivery propio: cobra el 100% sin intermediarios',
+    excerpt: 'Una carta digital para delivery propio te permite recibir pedidos online directamente, sin pagar el 30% a Glovo, Just Eat o Uber Eats. Aquí te explicamos cómo funciona y por qué es la mejor decisión para tu restaurante.',
+    tag: 'Sin comisiones',
+    tagColor: 'bg-red-100 text-red-700',
+    city: 'España',
+    image: '/blog/pillar-carta-digital-delivery-propio.jpg',
+    author: 'CartaMenu',
+    authorRole: 'Equipo CartaMenu',
+    date: '2026-04-23',
+    readTime: '5 min',
+    content: `
+<p><strong>Una carta digital para delivery propio es un sistema de pedidos online vinculado a tu web o enlace directo, donde el cliente elige, pide y paga directamente a ti, sin intermediarios.</strong> A diferencia de Glovo, Just Eat o Uber Eats, tú recibes el 100 % del importe de cada pedido y conservas los datos de tu cliente.</p>
+
+<h2>Qué es exactamente una carta digital para delivery propio</h2>
+<p>Es una tienda online específica para tu restaurante. El cliente accede desde un enlace en tu Instagram, tu web o un código QR, navega por tu carta con fotos, añade platos al carrito y finaliza el pedido. Tú recibes la comanda en tiempo real en tu móvil, tablet o impresora de cocina.</p>
+<p>No hay app que descargar. No hay registro complicado. Funciona desde cualquier navegador móvil.</p>
+
+<h2>Por qué el delivery propio es más rentable</h2>
+<p>Con las plataformas de terceros, el coste real de cada pedido supera el 30 % si sumas comisión, publicidad interna y tiempo de espera del cobro. Con un canal propio:</p>
+<ul>
+<li>Cobras el <strong>100 % del pedido</strong> al instante.</li>
+<li>Conoces a tu cliente: email, historial, preferencias.</li>
+<li>Decides tus precios, promociones y horarios sin pedir permiso a nadie.</li>
+<li>El coste de la tecnología es fijo: <strong>10 €/año con CartaMenu</strong>, independientemente de cuánto vendas.</li>
+</ul>
+
+<h2>Cómo migrar a tus clientes al canal propio</h2>
+<p>El mayor reto no es técnico, es el cambio de hábito. La estrategia más efectiva:</p>
+<ul>
+<li><strong>Flyer en cada pedido de app externa:</strong> "Pídenos directo y llévate el envío gratis".</li>
+<li><strong>Enlace en Instagram:</strong> cambia el botón de acción por el enlace a tu carta digital.</li>
+<li><strong>Precio ligeramente mejor:</strong> como no pagas comisión, puedes ofrecer un 5–10 % de descuento en pedidos directos y aun así ganar más.</li>
+</ul>
+
+<h2>CartaMenu: la carta digital para delivery propio más asequible de España</h2>
+<p><a href="/">CartaMenu</a> permite a cualquier restaurante, bar o negocio de comida tener su propio sistema de pedidos online en menos de una hora, sin conocimientos técnicos y por solo <strong>10 €/año</strong>. Sin comisiones. Sin permanencia. Sin letra pequeña.</p>
+<p><strong>¿Listo para cobrar el 100% de tus pedidos? <a href="/checkout-plan">Empieza con CartaMenu por 10 €/año</a>.</strong></p>
+`,
+    faq: {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "¿Qué necesito para tener mi propio delivery sin comisiones?", "acceptedAnswer": { "@type": "Answer", "text": "Solo necesitas una herramienta como CartaMenu. En menos de una hora puedes tener tu carta digital online, con pedidos, pagos y notificaciones configurados, sin necesidad de conocimientos técnicos ni hardware especial." } },
+    { "@type": "Question", "name": "¿Cómo reciben los clientes los pedidos si no usan una app?", "acceptedAnswer": { "@type": "Answer", "text": "El cliente accede a tu carta a través de un enlace web o código QR desde su móvil, sin necesidad de descargar ninguna aplicación. Tú recibes el pedido en tiempo real en tu dispositivo." } },
+    { "@type": "Question", "name": "¿Puedo tener delivery propio y seguir en las plataformas a la vez?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. La estrategia recomendada es usar las plataformas para captar clientes nuevos e ir migrando a los recurrentes a tu canal propio con incentivos como descuentos exclusivos o envío gratuito." } },
+    { "@type": "Question", "name": "¿Cuánto cuesta tener una carta digital para delivery propio?", "acceptedAnswer": { "@type": "Answer", "text": "Con CartaMenu, el coste es de 10 € al año, sin comisiones por pedido. Es la solución más económica del mercado para restaurantes independientes en España." } }
+  ]
+},
+  },
+  {
+    slug: 'sistema-de-pedidos-para-catering',
+    title: 'Sistema de pedidos para catering: gestiona menús cerrados y pagos por adelantado',
+    excerpt: 'El catering tiene necesidades muy distintas al delivery tradicional. Menús cerrados, aforos variables, pagos por adelantado. Te explicamos qué sistema de pedidos necesitas y cómo configurarlo.',
+    tag: 'Sin comisiones',
+    tagColor: 'bg-red-100 text-red-700',
+    city: 'España',
+    image: '/blog/pillar-sistema-pedidos-catering.jpg',
+    author: 'CartaMenu',
+    authorRole: 'Equipo CartaMenu',
+    date: '2026-04-23',
+    readTime: '5 min',
+    content: `
+<p><strong>Un sistema de pedidos para catering debe gestionar menús cerrados por persona, fechas de evento, aforos variables y cobros por adelantado, algo que las plataformas de delivery convencionales no están diseñadas para hacer.</strong></p>
+
+<h2>Las particularidades del catering que rompen los sistemas estándar</h2>
+<p>El catering no funciona como un restaurante de delivery. Los retos específicos son:</p>
+<ul>
+<li><strong>Menú cerrado por precio por persona</strong> (no por plato individual).</li>
+<li><strong>Fecha y hora del evento</strong> como campo obligatorio del pedido.</li>
+<li><strong>Pago por adelantado o con señal</strong> para confirmar la reserva.</li>
+<li><strong>Personalización por dieta:</strong> vegetarianos, celíacos, alergias.</li>
+<li><strong>Escala variable:</strong> desde 10 hasta 500 comensales.</li>
+</ul>
+<p>La mayoría de empresas de catering siguen gestionando estos pedidos por email o WhatsApp, lo que genera errores, duplicidades y pérdida de tiempo en back-and-forth.</p>
+
+<h2>Cómo configurar un sistema de pedidos para catering</h2>
+<p>La clave está en estructurar tu carta digital como un catálogo de paquetes, no de platos individuales:</p>
+<ul>
+<li><strong>Paquete "Cóctel básico":</strong> X€/persona, incluye aperitivos + bebidas.</li>
+<li><strong>Paquete "Menú completo":</strong> X€/persona, incluye entrante + principal + postre.</li>
+<li>Campo adicional: número de comensales y fecha del evento.</li>
+<li>Notas especiales: restricciones alimentarias.</li>
+</ul>
+<p>Con <a href="/">CartaMenu</a> puedes crear estos paquetes, incluir campos personalizados en el pedido y recibir toda la información centralizada sin intercambio de emails.</p>
+
+<h2>El beneficio real: menos tiempo administrativo, más eventos</h2>
+<p>Una empresa de catering que recibe 10 solicitudes de presupuesto a la semana puede perder 5–8 horas semanales en gestión de emails y llamadas. Con un sistema digital, el cliente rellena todos los datos necesarios en el primer contacto, el pedido queda registrado y tú solo tienes que confirmar.</p>
+<p>Eso son 5–8 horas semanales recuperadas para lo que realmente importa: cocinar y atender eventos.</p>
+<p><strong>¿Quieres digitalizar tu catering? <a href="/checkout-plan">Empieza con CartaMenu por 10 €/año</a>.</strong></p>
+`,
+    faq: {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "¿Puede un sistema de pedidos para catering gestionar pagos por adelantado?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. Con CartaMenu puedes activar el pago online en el momento del pedido, lo que funciona perfectamente para catering donde se requiere una señal o el pago completo para confirmar el evento." } },
+    { "@type": "Question", "name": "¿Cómo gestiono las restricciones alimentarias en pedidos de catering?", "acceptedAnswer": { "@type": "Answer", "text": "Puedes añadir campos de notas en el pedido donde el cliente especifique el número de comensales con dietas especiales (vegetarianos, celíacos, alérgicos). Esa información llega junto con el resto del pedido." } },
+    { "@type": "Question", "name": "¿Es complicado configurar un sistema de catering con CartaMenu?", "acceptedAnswer": { "@type": "Answer", "text": "No. Puedes crear paquetes de catering como si fueran productos de tu carta, con precio por persona y campos adicionales para fecha y número de comensales, en menos de una hora." } },
+    { "@type": "Question", "name": "¿Qué ventaja tiene sobre gestionar catering por WhatsApp o email?", "acceptedAnswer": { "@type": "Answer", "text": "El cliente completa todos los datos del evento en el primer contacto, sin back-and-forth. Tú recibes un pedido estructurado y completo, lo que elimina errores y ahorra horas de gestión administrativa por semana." } }
+  ]
+},
+  },
+  {
+    slug: 'carta-digital-para-pedidos-en-mesa',
+    title: 'Carta digital para pedidos en mesa: el cliente pide desde el móvil, tu cocina no para',
+    excerpt: 'Una carta digital para pedidos en mesa elimina las esperas, reduce errores y libera a tus camareros para atender mejor. Descubre cómo funciona y por qué tu restaurante la necesita hoy.',
+    tag: 'Sin comisiones',
+    tagColor: 'bg-red-100 text-red-700',
+    city: 'España',
+    image: '/blog/pillar-carta-digital-pedidos-mesa.jpg',
+    author: 'CartaMenu',
+    authorRole: 'Equipo CartaMenu',
+    date: '2026-04-23',
+    readTime: '5 min',
+    content: `
+<p><strong>Una carta digital para pedidos en mesa permite al comensal escanear un código QR, ver el menú con fotos, elegir sus platos y enviar el pedido directamente a cocina desde su propio móvil, sin necesidad de llamar al camarero.</strong></p>
+
+<h2>El problema real en el servicio de sala</h2>
+<p>En un restaurante con 15 mesas llenas, el proceso de tomar nota consume entre 20 y 30 minutos del tiempo de cada camarero por turno. Suma los errores de transcripción, los "perdona, ¿me lo repites?" y las mesas que no consiguen captar la atención del personal, y tienes una experiencia de cliente degradada que afecta directamente a las reseñas en Google.</p>
+<p>La carta digital para pedidos en mesa resuelve todo esto de raíz.</p>
+
+<h2>Cómo funciona en la práctica</h2>
+<ul>
+<li>Coloca un código QR en cada mesa (una tarjetita, un sticker o un soporte).</li>
+<li>El cliente escanea con la cámara de su móvil, sin necesidad de app.</li>
+<li>Navega por la carta con fotos y descripciones, elige sus platos y confirma el pedido.</li>
+<li>El pedido llega al instante a tu panel o impresora de cocina, con mesa y detalles completos.</li>
+</ul>
+<p>El camarero recibe el pedido ya procesado y solo necesita servir. Sin interrupciones, sin errores de transcripción.</p>
+
+<h2>Beneficios medibles</h2>
+<ul>
+<li><strong>Rotación de mesas más rápida:</strong> menos tiempo esperando para pedir.</li>
+<li><strong>Ticket medio más alto:</strong> los clientes exploran más la carta cuando no sienten presión social de retener al camarero.</li>
+<li><strong>Menos errores:</strong> el cliente confirma su propio pedido antes de enviarlo.</li>
+<li><strong>Personal más productivo:</strong> los camareros se centran en el servicio, no en tomar notas.</li>
+</ul>
+
+<h2>CartaMenu: carta digital para pedidos en mesa a 10 €/año</h2>
+<p>Con <a href="/">CartaMenu</a> configuras tu carta, generas los QR de mesa y empiezas a recibir pedidos el mismo día. Sin hardware especial, sin mensualidades, sin comisiones por pedido.</p>
+<p><strong>¿Listo para modernizar tu sala? <a href="/checkout-plan">Empieza con CartaMenu por 10 €/año</a>.</strong></p>
+`,
+    faq: {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "¿Los clientes mayores pueden usar la carta digital en mesa?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. La carta digital está diseñada para ser simple e intuitiva. El cliente solo escanea el QR con la cámara de su móvil, sin descargar apps ni registrarse. Para clientes que prefieran no usarla, puedes mantener cartas físicas como complemento." } },
+    { "@type": "Question", "name": "¿Necesito una impresora especial para recibir los pedidos en cocina?", "acceptedAnswer": { "@type": "Answer", "text": "No es obligatorio. Puedes recibir los pedidos en un tablet, móvil u ordenador desde el panel de CartaMenu. Si quieres impresión automática en cocina, es compatible con impresoras de tickets estándar." } },
+    { "@type": "Question", "name": "¿La carta digital para pedidos en mesa funciona sin WiFi para el cliente?", "acceptedAnswer": { "@type": "Answer", "text": "El cliente necesita conexión a internet para cargar la carta y enviar el pedido. Puedes ofrecer la contraseña de tu WiFi junto al QR para garantizar que siempre tengan conexión." } },
+    { "@type": "Question", "name": "¿Puedo usar el mismo sistema para pedidos a domicilio y para mesas?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. Con CartaMenu, el mismo sistema gestiona los pedidos en mesa por QR, los pedidos para recoger en local y los pedidos a domicilio, todo desde una única plataforma." } }
+  ]
+},
+  },
+  {
+    slug: 'carta-digital-para-servicio-a-domicilio',
+    title: 'Carta digital para servicio a domicilio sin comisiones: guía completa',
+    excerpt: 'Tener tu propia carta digital para servicio a domicilio te permite recibir pedidos online sin pagar el 30% a las apps. Te explicamos cómo montarlo, qué necesitas y cuánto cuesta realmente.',
+    tag: 'Sin comisiones',
+    tagColor: 'bg-red-100 text-red-700',
+    city: 'España',
+    image: '/blog/pillar-carta-digital-domicilio.jpg',
+    author: 'CartaMenu',
+    authorRole: 'Equipo CartaMenu',
+    date: '2026-04-23',
+    readTime: '5 min',
+    content: `
+<p><strong>Una carta digital para servicio a domicilio es la alternativa directa a Glovo, Just Eat y Uber Eats: tu cliente pide desde su móvil a través de tu enlace propio y tú cobras el 100% sin ceder comisiones a ninguna plataforma.</strong></p>
+
+<h2>Qué incluye una carta digital para domicilio</h2>
+<p>Para que el servicio a domicilio funcione sin intermediarios, la carta digital necesita:</p>
+<ul>
+<li><strong>Catálogo visual</strong> con fotos, precios y descripciones.</li>
+<li><strong>Dirección de entrega</strong> capturada en el pedido.</li>
+<li><strong>Zona de reparto configurable</strong> (tú defines hasta dónde llegas).</li>
+<li><strong>Pago online o contra reembolso</strong> según tu preferencia.</li>
+<li><strong>Notificación al instante</strong> cuando entra un pedido nuevo.</li>
+</ul>
+<p>Con <a href="/">CartaMenu</a> todo esto está incluido en los 10 €/año.</p>
+
+<h2>Las tres ventajas que las apps nunca te darán</h2>
+<p><strong>1. El cliente es tuyo.</strong> Su nombre, teléfono e historial de pedidos quedan en tu sistema, no en el de la plataforma. Puedes fidelizarlo directamente.</p>
+<p><strong>2. Tus precios, tus reglas.</strong> No tienes que negociar descuentos con ninguna app para aparecer destacado. Tú decides cuándo hacer una promoción y a quién.</p>
+<p><strong>3. Cobro inmediato.</strong> El pago llega directamente a tu cuenta, sin retenciones de 7 o 14 días como hacen algunas plataformas.</p>
+
+<h2>El gran problema: el hábito del cliente</h2>
+<p>El mayor obstáculo no es técnico, es que tus clientes tienen el hábito de abrir Glovo o Just Eat. La solución es crear un incentivo claro para cambiar ese hábito:</p>
+<ul>
+<li>Ofrece <strong>envío gratuito</strong> en pedidos directos (puedes permitirlo porque no pagas comisión).</li>
+<li>Añade un <strong>extra gratuito</strong> (una bebida, un postre) en el primer pedido directo.</li>
+<li>Comunícalo en cada caja que entregues por las plataformas actuales.</li>
+</ul>
+<p>En 60–90 días, la mayoría de tus clientes recurrentes habrán cambiado de canal.</p>
+<p><strong>¿Empezamos? <a href="/checkout-plan">Prueba CartaMenu por 10 €/año sin comisiones</a>.</strong></p>
+`,
+    faq: {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "¿Necesito una web propia para tener carta digital de domicilio?", "acceptedAnswer": { "@type": "Answer", "text": "No. CartaMenu te da un enlace propio (como cartamenu.shop/tu-restaurante) que puedes compartir en redes sociales, WhatsApp o Google sin necesidad de tener web." } },
+    { "@type": "Question", "name": "¿Cómo gestiono el reparto si dejo las apps?", "acceptedAnswer": { "@type": "Answer", "text": "Puedes usar repartidores propios, centrarte en el modelo takeaway donde el cliente recoge, o usar servicios de mensajería de última milla locales. Muchos restaurantes combinan las tres opciones según el volumen." } },
+    { "@type": "Question", "name": "¿Cuánto tarda en configurarse una carta digital para domicilio?", "acceptedAnswer": { "@type": "Answer", "text": "Con CartaMenu, en menos de una hora puedes tener tu carta con fotos, precios y sistema de pedidos listo para recibir el primer pedido. No necesitas conocimientos técnicos." } },
+    { "@type": "Question", "name": "¿Puedo limitar las zonas de reparto en mi carta digital?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. Puedes definir las zonas de reparto por código postal, establecer un pedido mínimo y configurar el coste de envío según la distancia, todo desde el panel de CartaMenu." } }
+  ]
+},
+  },
+  {
+    slug: 'sistema-de-pedidos-para-food-trucks',
+    title: 'Sistema de pedidos para food trucks: digitaliza la cola y cobra antes de que lleguen',
+    excerpt: 'Un food truck con sistema de pedidos online puede gestionar colas de 30 personas sin caos, cobrar por adelantado y aumentar su ticket medio. Te explicamos cómo hacerlo desde hoy.',
+    tag: 'Sin comisiones',
+    tagColor: 'bg-red-100 text-red-700',
+    city: 'España',
+    image: '/blog/pillar-sistema-pedidos-food-trucks.jpg',
+    author: 'CartaMenu',
+    authorRole: 'Equipo CartaMenu',
+    date: '2026-04-23',
+    readTime: '5 min',
+    content: `
+<p><strong>Un sistema de pedidos para food trucks permite al cliente hacer su pedido y pagar desde el móvil antes de llegar a la ventana, eliminando las colas, reduciendo los tiempos de espera y permitiendo al equipo del truck preparar con antelación.</strong></p>
+
+<h2>El problema único de los food trucks</h2>
+<p>Un food truck opera en condiciones distintas a un restaurante fijo. Los picos de demanda son brutales (un mercado, un festival, una zona de oficinas a mediodía), el espacio es mínimo y el equipo suele ser de 1–3 personas. La cola es el mayor cuello de botella y el mayor motivo de pérdida de clientes que se van sin comprar.</p>
+<p>Con un sistema de pedidos digital:</p>
+<ul>
+<li>El cliente hace el pedido desde el móvil mientras todavía está de camino.</li>
+<li>Paga online: no hay cambio, no hay espera en caja.</li>
+<li>Llega al truck, da su nombre y recoge. Sin cola.</li>
+</ul>
+
+<h2>Ventajas específicas para food trucks</h2>
+<p><strong>Pre-producción:</strong> cuando ves 8 pedidos de hamburgesa vegana antes de abrir, preparas la mise en place exacta. Sin desperdicios, sin sorpresas.</p>
+<p><strong>Cobro garantizado:</strong> el pedido ya está pagado antes de que el cliente llegue. Cero impagos, cero "espérame que voy a por efectivo".</p>
+<p><strong>Datos para elegir ubicaciones:</strong> sabes qué días y zonas generan más pedidos y puedes planificar tu ruta de forma más rentable.</p>
+
+<h2>Cómo publicitar tu sistema en el food truck</h2>
+<ul>
+<li>Vinilo en el lateral del truck con QR grande y el texto "Pide ya, recoge en 10 min".</li>
+<li>Instagram y TikTok: publica tu ubicación diaria con el enlace de pedidos en la bio.</li>
+<li>Google Business Profile: actualiza tu ubicación semanal y añade el enlace de pedidos.</li>
+</ul>
+
+<h2>CartaMenu para food trucks: 10 €/año, sin comisiones</h2>
+<p>Con <a href="/">CartaMenu</a> tienes tu sistema de pedidos online listo en menos de una hora, adaptado a tu menú, sin cuotas mensuales ni porcentajes por venta. Ideal para food trucks que operan con márgenes ajustados y no pueden permitirse pagar comisiones del 30% a plataformas.</p>
+<p><strong>¿Listo para eliminar la cola? <a href="/checkout-plan">Empieza con CartaMenu por 10 €/año</a>.</strong></p>
+`,
+    faq: {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "¿Funciona el sistema de pedidos para food trucks sin conexión estable?", "acceptedAnswer": { "@type": "Answer", "text": "El sistema funciona con cualquier conexión a internet, incluyendo datos móviles. Para ubicaciones sin WiFi, el equipo del food truck puede recibir los pedidos directamente en el móvil con datos 4G." } },
+    { "@type": "Question", "name": "¿Puedo cambiar el menú del food truck según la ubicación del día?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. Desde el panel de CartaMenu puedes activar o desactivar platos en tiempo real, cambiar precios o añadir especiales del día en segundos, desde tu móvil." } },
+    { "@type": "Question", "name": "¿Cómo avisa el sistema al cliente cuando su pedido está listo?", "acceptedAnswer": { "@type": "Answer", "text": "Puedes configurar el tiempo estimado de preparación. El cliente recibe confirmación de su pedido por pantalla y sabe cuándo aproximadamente debe llegar al truck a recoger." } },
+    { "@type": "Question", "name": "¿Es rentable invertir en un sistema de pedidos para un food truck pequeño?", "acceptedAnswer": { "@type": "Answer", "text": "Completamente. A 10 €/año, el coste equivale a vender 1–2 raciones extra al año. La reducción de colas y el cobro anticipado hacen que se amortice desde el primer día de uso." } }
+  ]
+},
   },
 ];
 

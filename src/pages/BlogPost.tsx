@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, ArrowRight, Calendar } from 'lucide-react';
 import { getPostBySlug, BLOG_POSTS } from '@/data/blogPosts';
 import SEOHead from '@/components/SEOHead';
 import BlogFooter from '@/components/BlogFooter';
+import CommissionCalculator from '@/components/CommissionCalculator';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
@@ -183,6 +184,8 @@ export default function BlogPost() {
               prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:not-italic"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
+
+          {post.hasCalculator && <CommissionCalculator />}
 
           {/* Inline CTA */}
           <div className="my-12 bg-[#1B1F2A] rounded-2xl p-8 text-center">
