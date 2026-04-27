@@ -47,7 +47,7 @@ serve(async (req) => {
 
     const base = mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com'
     const token = await getPayPalToken(clientId, secret, mode)
-    const currency = mode === 'live' ? 'EUR' : 'USD'
+    const currency = 'EUR'
 
     const res = await fetch(`${base}/v2/checkout/orders`, {
       method: 'POST',

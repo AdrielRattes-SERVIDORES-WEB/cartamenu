@@ -119,7 +119,7 @@ export default function PlanCheckout() {
   }
 
   return (
-    <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: 'USD', intent: 'capture', locale: 'es_ES' }}>
+    <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: 'EUR', intent: 'capture', locale: 'es_ES' }}>
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <nav className="bg-white border-b border-gray-200 px-4 py-4">
