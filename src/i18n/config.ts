@@ -39,13 +39,13 @@ const getInitialLanguage = () => {
   
   if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
     try {
-      return localStorage.getItem('language') || 'en';
+      return localStorage.getItem('language') || 'es';
     } catch (error) {
       console.error('Error accessing localStorage:', error);
     }
   }
-  
-  return 'en';
+
+  return 'es';
 };
 
 const initialLanguage = getInitialLanguage();
@@ -55,7 +55,7 @@ i18n
   .init({
     resources,
     lng: initialLanguage,
-    fallbackLng: 'en',
+    fallbackLng: 'es',
     interpolation: {
       escapeValue: false,
     },
