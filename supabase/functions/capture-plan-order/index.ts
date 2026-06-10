@@ -11,8 +11,8 @@ serve(async (req) => {
   try {
     const { orderId } = await req.json()
 
-    const clientId = Deno.env.get('PAYPAL_CLIENT_ID') || 'AW6dW2N-uZtwW9pohDKL9gpScNG-knH0eJC0q1uRulgsQgfuV858LJ7fz1TI2iCfjYTYyxsdB7VEDK6f'
-    const secret = Deno.env.get('PAYPAL_CLIENT_SECRET') || 'EGIBhC4CjzvZIBWm_X6XH3ACkVAie4MdGWHkhdIrH9pYWVliyMSWahtbqbG9gw2CgDMzctL_FOc4jM9Q'
+    const clientId = Deno.env.get('PAYPAL_CLIENT_ID') || 'AUx81m1NqUoRAa06d3xZEpUP2-radBBaQVeD2QMsufLpxhvuweY10xyOWLx_Rsrw7OW1IkDARGwGlomn'
+    const secret = Deno.env.get('PAYPAL_CLIENT_SECRET') || 'EEz1xj11I_9iaQ9mjmokTvyWzhn8qKgS7Eswfyh5D6-8UQW_1ekFFzfhELe0LwBxzceKyClpWAGwZnpJ'
     const mode = Deno.env.get('PAYPAL_MODE') || 'live'
     const base = mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com'
 
