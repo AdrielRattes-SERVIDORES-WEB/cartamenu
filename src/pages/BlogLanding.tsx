@@ -248,7 +248,17 @@ function Hero() {
             <ArrowRight className="w-4 h-4" />
           </Link>
 
-          <p className="text-xs text-white/70 mt-3" style={jakartaSans}>Pago único anual · Sin comisiones por pedido · Soporte en español</p>
+          <p className="text-xs text-white/70 mt-3" style={jakartaSans}>
+          Pago único anual · Sin comisiones por pedido · Soporte en español ·{" "}
+          <a
+            href="https://info.glovoapp.com/es/restaurantes/"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            className="underline underline-offset-2 hover:text-white/90 transition-colors"
+          >
+            ¿Cuánto cobra Glovo?
+          </a>
+        </p>
 
           {/* Social proof */}
           <div className="mt-10 flex items-center gap-3">
@@ -780,7 +790,17 @@ function CtaBanner() {
             Cómo funciona
           </a>
         </div>
-        <p className="text-white/70 text-xs mt-8" style={jakartaSans}>Pago único anual · Sin comisiones por pedido · Soporte en español</p>
+        <p className="text-white/70 text-xs mt-8" style={jakartaSans}>
+          Pago único anual · Sin comisiones por pedido · Soporte en español ·{" "}
+          <a
+            href="https://www.ubereats.com/es/business"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            className="underline underline-offset-2 hover:text-white/90 transition-colors"
+          >
+            Alternativa a Uber Eats
+          </a>
+        </p>
       </div>
     </section>
   );
@@ -848,9 +868,9 @@ export default function BlogLanding() {
   return (
     <div className="min-h-screen antialiased" style={jakartaSans}>
       <SEOHead
-        title="Pedidos online para restaurantes en España sin comisiones"
+        title="Pedidos online sin comisiones para restaurantes"
         description="CartaMenu: la plataforma que permite a tu restaurante recibir pedidos online sin pagar el 30% a Glovo o Uber Eats. Desde 10€/año. Sin comisiones por pedido."
-        canonical="/blog"
+        canonical="/"
         jsonLd={FAQ_SCHEMA}
       />
       <Navbar />

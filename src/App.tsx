@@ -65,7 +65,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <Routes>
-                <Route path="/" element={<Navigate to="/blog" replace />} />
+                <Route path="/" element={<BlogLanding />} />
                 {/* Rotas multi-tenant por slug */}
                 <Route path="/:slug" element={<Index />} />
                 <Route path="/:slug/product/:id" element={<ProductDetail />} />
@@ -101,7 +101,7 @@ const App = () => (
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>
                 
-                <Route path="/blog" element={<BlogLanding />} />
+                <Route path="/blog" element={<Navigate to="/" replace />} />
                 <Route path="/blog/articulos" element={<BlogList />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/checkout-plan" element={<PlanCheckout />} />

@@ -26,7 +26,19 @@
       "Bash(git:*)",
       "Bash(echo:*)",
       "Bash(gh auth:*)",
-      "Bash(gh repo:*)"
+      "Bash(gh repo:*)",
+      "Bash(supabase secrets:*)",
+      "Bash(sleep:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:cartamenu.vercel.app)",
+      "WebFetch(domain:cartamenu.shop)",
+      "Bash(nslookup:*)",
+      "Bash(cp:*)",
+      "WebSearch",
+      "WebFetch(domain:restobot.ai)",
+      "WebFetch(domain:www.monouso.es)",
+      "WebFetch(domain:www.flipdish.com)"
     ]
   }
 }
