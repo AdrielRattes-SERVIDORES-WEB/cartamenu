@@ -34,16 +34,9 @@ serve(async (req) => {
     const { plan } = await req.json()
 
     const planData = PLANS[plan] ?? PLANS.auto
-    const clientId = Deno.env.get('PAYPAL_CLIENT_ID')
-    const secret = Deno.env.get('PAYPAL_CLIENT_SECRET')
+    const clientId = Deno.env.get('PAYPAL_CLIENT_ID') || 'AW6dW2N-uZtwW9pohDKL9gpScNG-knH0eJC0q1uRulgsQgfuV858LJ7fz1TI2iCfjYTYyxsdB7VEDK6f'
+    const secret = Deno.env.get('PAYPAL_CLIENT_SECRET') || 'EGIBhC4CjzvZIBWm_X6XH3ACkVAie4MdGWHkhdIrH9pYWVliyMSWahtbqbG9gw2CgDMzctL_FOc4jM9Q'
     const mode = Deno.env.get('PAYPAL_MODE') || 'live'
-
-    if (!clientId || !secret) {
-      return new Response(JSON.stringify({ error: 'PayPal credentials not configured' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
 
     const base = mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com'
     const token = await getPayPalToken(clientId, secret, mode)
