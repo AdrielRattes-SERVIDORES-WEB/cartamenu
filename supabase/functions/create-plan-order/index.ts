@@ -36,7 +36,7 @@ serve(async (req) => {
     const planData = PLANS[plan] ?? PLANS.auto
     const clientId = Deno.env.get('PAYPAL_CLIENT_ID')
     const secret = Deno.env.get('PAYPAL_CLIENT_SECRET')
-    const mode = Deno.env.get('PAYPAL_MODE') || 'sandbox'
+    const mode = Deno.env.get('PAYPAL_MODE') || 'live'
 
     if (!clientId || !secret) {
       return new Response(JSON.stringify({ error: 'PayPal credentials not configured' }), {

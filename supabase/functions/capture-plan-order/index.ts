@@ -13,7 +13,7 @@ serve(async (req) => {
 
     const clientId = Deno.env.get('PAYPAL_CLIENT_ID')
     const secret = Deno.env.get('PAYPAL_CLIENT_SECRET')
-    const mode = Deno.env.get('PAYPAL_MODE') || 'sandbox'
+    const mode = Deno.env.get('PAYPAL_MODE') || 'live'
     const base = mode === 'live' ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com'
 
     // Get token
